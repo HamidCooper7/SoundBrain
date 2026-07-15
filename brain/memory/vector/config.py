@@ -1,0 +1,7 @@
+DEFAULT_PROVIDER = "chroma"
+
+DEFAULT_COLLECTION = "soundbrain"
+
+DEFAULT_TOP_K = 5
+
+PERSIST_DIRECTORY = "data/vector_db"

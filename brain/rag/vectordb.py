@@ -1,0 +1,56 @@
+from __future__ import annotations
+
+from chromadb import PersistentClient
+from chromadb.api.types import EmbeddingFunction
+
+from brain.embedding import get_embedding_model
+from brain.infrastructure.config import settings
+
+
+client = PersistentClient(
+    path=str(
+        settings.chroma.path
+    )
+)
+
+
+class QwenEmbeddingFunction(
+    EmbeddingFunction
+):
+
+    def __init__(self):
+
+        self.model = get_embedding_model()
+
+    def __call__(
+        self,
+        input,
+    ):
+
+        if isinstance(
+            input,
+            str,
+        ):
+            input = [input]
+
+        embeddings = self.model.encode(
+            input,
+            normalize_embeddings=True,
+            batch_size=64,
+            show_progress_bar=False,
+        )
+
+        return embeddings.tolist()
+
+
+embedding_function = (
+    QwenEmbeddingFunction()
+)
+
+
+collection = (
+    client.get_or_create_collection(
+        name=settings.chroma.collection,
+        embedding_function=embedding_function,
+    )
+)

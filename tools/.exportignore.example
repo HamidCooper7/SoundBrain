@@ -1,0 +1,13 @@
+# One path or pattern per line. Lines beginning with # are comments.
+# Folder patterns must end with a slash.
+
+# LM Studio folders and downloaded local model files
+.venv/
+venv/
+env/
+.lmstudio/
+LM Studio/
+lmstudio/
+*.gguf
+*.safetensors
+*.bin

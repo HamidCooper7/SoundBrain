@@ -1,0 +1,60 @@
+{
+    "metadata": {
+        "audio_type": "mix",
+        "source_type": "full_track",
+        "instrument": null,
+        "is_full_mix": true,
+        "confidence": 0.7
+    },
+    "intelligence": {
+        "semantic_labels": [
+            {
+                "label": "electronic",
+                "confidence": 0.41
+            },
+            {
+                "label": "synth",
+                "confidence": 0.31
+            },
+            {
+                "label": "drums",
+                "confidence": 0.23
+            },
+            {
+                "label": "ambient",
+                "confidence": 0.21
+            },
+            {
+                "label": "vocal",
+                "confidence": 0.18
+            }
+        ]
+    },
+    "engineering": {
+        "score": 90.0,
+        "strengths": [
+            "Loudness is well balanced.",
+            "Dynamic range is healthy.",
+            "Stereo image is acceptable."
+        ],
+        "issues": [
+            {
+                "title": "Clipping",
+                "severity": "high",
+                "description": "Peak level exceeds 0 dBFS. Possible digital clipping or inter-sample peak distortion.",
+                "recommendation": "Reduce output gain and check true peak levels."
+            },
+            {
+                "title": "Phase Correlation",
+                "severity": "low",
+                "description": "Stereo correlation is moderate. Review mono compatibility if required.",
+                "recommendation": "Check mono compatibility during final review."
+            }
+        ]
+    },
+    "recommendations": [
+        "Reduce output gain and check true peak levels.",
+        "Check mono compatibility during final review."
+    ],
+    "summary": "### Audio Facts - Audio Context: Type: mix, Source: full_track, Instrument: None, Full Mix: True - Tempo: 139.67 BPM - Pitch: 87.19 Hz - Key: C - LUFS: -9.49 LUFS - Peak: 1.0348 dBFS - RMS: 0.2643 - Dynamic Range: 12.82 dB - Crest Factor: 12.82 dB - Stereo Width: 0.2384 - Spectral Centroid: 2464.68 Hz - Spectral Bandwidth: 2901.00 Hz - Spectral Rolloff: 5241.80 Hz - Spectral Flatness: 0.001055 - Spectral Contrast: 22.63 - Zero Crossing Rate: 0.055355 ### Engineering Interpretation - Clipping (high) Description: Peak level exceeds 0 dBFS. Possible digital clipping or inter-sample peak distortion. Recommendation: Reduce output gain and check true peak levels. - Phase Correlation (low) Description: Stereo correlation is moderate. Review mono compatibility if required. Recommendation: Check mono compatibility during final review. ### Recommendations - Reduce output gain and check true peak levels. - Check mono compatibility during final review. ### Conclusion Analysis completed using provided measurements. Engineer findings detected: Clipping, Phase Correlation."
+}
