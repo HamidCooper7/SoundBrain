@@ -1,101 +1,53 @@
 from __future__ import annotations
 
-from .exceptions import ModelLoadError
-from .models import LoadedModelAssets
+from .exceptions import ModelLoadError, UnsupportedBackendError
+from .models import LoadedModelAssets, ModelSpec
 from .repository import ModelRepository
+from .strategies import LoaderStrategy, SentenceTransformersStrategy, TransformersStrategy
 
 
 class ModelLoader:
     """
-    Generic model loader.
-
-    Supports:
-        - HuggingFace Transformers
-        - SentenceTransformer
+    Loads models through an injected repository and explicit backend strategy.
     """
 
-    def __init__(self) -> None:
-
-        self.repository = ModelRepository()
+    def __init__(
+        self,
+        repository: ModelRepository,
+        strategies: dict[str, LoaderStrategy] | None = None,
+    ) -> None:
+        self.repository = repository
+        self._strategies = strategies or {
+            "transformers": TransformersStrategy(),
+            "sentence-transformers": SentenceTransformersStrategy(),
+        }
 
     def load(
         self,
         *,
-        model_name: str,
+        spec: ModelSpec,
         model_cls: type,
         processor_cls: type | None = None,
         tokenizer_cls: type | None = None,
         feature_extractor_cls: type | None = None,
-        trust_remote_code: bool = False,
     ) -> LoadedModelAssets:
-
-        source, local = self.repository.resolve(model_name)
-
-        kwargs = {
-            "trust_remote_code": trust_remote_code,
-        }
-
-        if local:
-            kwargs["local_files_only"] = True
-
+        strategy = self._strategies.get(spec.backend)
+        if strategy is None:
+            raise UnsupportedBackendError(
+                f"Unsupported model backend: {spec.backend!r}"
+            )
+        source, local = self.repository.resolve(spec.name)
         try:
-
-            # -----------------------------
-            # SentenceTransformer Backend
-            # -----------------------------
-            if model_cls.__name__ in {"SentenceTransformer", "CrossEncoder"}:
-
-                model = model_cls(
-                    source,
-                    **kwargs,
-                )
-
-                return LoadedModelAssets(
-                    model=model,
-                )
-
-            # -----------------------------
-            # HuggingFace Transformers
-            # -----------------------------
-            model = model_cls.from_pretrained(
+            return strategy.load(
+                spec,
                 source,
-                **kwargs,
+                model_cls,
+                processor_cls,
+                tokenizer_cls,
+                feature_extractor_cls,
+                local,
             )
-
-            processor = None
-            tokenizer = None
-            feature_extractor = None
-
-            if processor_cls is not None:
-
-                processor = processor_cls.from_pretrained(
-                    source,
-                    **kwargs,
-                )
-
-            if tokenizer_cls is not None:
-
-                tokenizer = tokenizer_cls.from_pretrained(
-                    source,
-                    **kwargs,
-                )
-
-            if feature_extractor_cls is not None:
-
-                feature_extractor = feature_extractor_cls.from_pretrained(
-                    source,
-                    **kwargs,
-                )
-
-            return LoadedModelAssets(
-                model=model,
-                processor=processor,
-                tokenizer=tokenizer,
-                feature_extractor=feature_extractor,
-            )
-
         except Exception as exc:
-
             raise ModelLoadError(
-                f"Unable to load model '{model_name}'."
+                f"Unable to load model '{spec.name}'."
             ) from exc

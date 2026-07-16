@@ -7,11 +7,16 @@ MODEL_NAME = "lmstudio-community/Qwen2.5-7B-Instruct"
 
 
 def _assets():
-    return ModelRuntime.shared().load(
+    runtime = ModelRuntime.shared()
+    return runtime.load(
         model_name=MODEL_NAME,
         model_cls=AutoModelForCausalLM,
         tokenizer_cls=AutoTokenizer,
         trust_remote_code=True,
+        model_options={
+            "device_map": "auto",
+            "torch_dtype": runtime.dtype,
+        },
     )
 
 

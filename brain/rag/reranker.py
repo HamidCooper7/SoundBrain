@@ -10,6 +10,7 @@ def get_reranker(runtime: ModelRuntime | None = None) -> CrossEncoder:
     assets = (runtime or ModelRuntime.shared()).load(
         model_name=MODEL_NAME,
         model_cls=CrossEncoder,
+        backend="sentence-transformers",
         trust_remote_code=True,
     )
     return assets.model

@@ -10,6 +10,7 @@ def get_embedding_model() -> SentenceTransformer:
     assets = ModelRuntime.shared().load(
         model_name=str(settings.embedding.model_path),
         model_cls=SentenceTransformer,
+        backend="sentence-transformers",
         trust_remote_code=True,
     )
     return assets.model

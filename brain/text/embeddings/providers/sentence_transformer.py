@@ -19,6 +19,7 @@ class SentenceTransformerEmbedding(TextEmbeddingModel):
         return self._runtime.load(
             model_name=self.MODEL_NAME,
             model_cls=SentenceTransformer,
+            backend="sentence-transformers",
             trust_remote_code=True,
         ).model
 

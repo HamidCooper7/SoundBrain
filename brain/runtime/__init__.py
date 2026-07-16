@@ -7,7 +7,7 @@ from .exceptions import (
     UnsupportedBackendError,
 )
 from .loader import ModelLoader
-from .models import ModelInfo
+from .models import ModelInfo, ModelSpec
 from .runtime import ModelRuntime
 from .repository import ModelRepository
 
@@ -15,6 +15,7 @@ __all__ = [
     "ModelCache",
     "DeviceManager",
     "ModelInfo",
+    "ModelSpec",
     "ModelLoader",
     "ModelRuntime",
     "RuntimeErrorBase",

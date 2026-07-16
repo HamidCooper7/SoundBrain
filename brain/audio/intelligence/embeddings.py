@@ -56,7 +56,7 @@ class CLAPAudioEmbeddingModel(
 
     @property
     def device(self) -> str:
-        return str(self._assets.device)
+        return str(self._runtime.device)
 
     @property
     def processor(self):

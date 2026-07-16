@@ -1,37 +1,33 @@
 from __future__ import annotations
 
+from threading import RLock
+
+from .models import LoadedModelAssets, ModelSpec
+
 
 class ModelCache:
+    """Thread-safe storage; Runtime owns loading coordination and lifecycle."""
 
     def __init__(self) -> None:
-        self._models: dict[str, object] = {}
+        self._models: dict[ModelSpec, LoadedModelAssets] = {}
+        self._lock = RLock()
 
-    def contains(
-        self,
-        name: str,
-    ) -> bool:
+    def get(self, spec: ModelSpec) -> LoadedModelAssets | None:
+        with self._lock:
+            return self._models.get(spec)
 
-        return name in self._models
+    def put(self, spec: ModelSpec, assets: LoadedModelAssets) -> None:
+        with self._lock:
+            self._models[spec] = assets
 
-    def get(self, name: str) -> object:
-        return self._models[name]
+    def pop(self, spec: ModelSpec) -> LoadedModelAssets | None:
+        with self._lock:
+            return self._models.pop(spec, None)
 
-    def put(
-        self,
-        name: str,
-        model: object,
-    ) -> None:
-
-        self._models[name] = model
-
-    def clear(self) -> None:
-        self._models.clear()
-
-    def remove(self, name: str) -> None:
-        self._models.pop(name, None)
-
-    def names(self) -> tuple[str, ...]:
-        return tuple(self._models)
+    def specs(self) -> tuple[ModelSpec, ...]:
+        with self._lock:
+            return tuple(self._models)
 
     def size(self) -> int:
-        return len(self._models)
+        with self._lock:
+            return len(self._models)

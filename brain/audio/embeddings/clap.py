@@ -53,7 +53,7 @@ class CLAPEmbedding(AudioEmbeddingModel):
 
         return EmbeddingCapability(
             backend="transformers",
-            device=str(self._audio_assets.device),
+            device=str(self._runtime.device),
         )
 
     @torch.inference_mode()
