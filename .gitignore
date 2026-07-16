@@ -68,6 +68,9 @@ clap_models/
 embedding_models/
 
 runtime/
+!brain/runtime/
+!brain/runtime/**
+brain/runtime/__pycache__/
 generated/
 outputs/
 exports/

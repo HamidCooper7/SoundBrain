@@ -14,11 +14,12 @@ class BGEEmbedding(TextEmbeddingModel):
 
     MODEL_NAME = "BAAI/bge-m3"
 
-    def __init__(self) -> None:
+    def __init__(self, runtime: ModelRuntime | None = None) -> None:
+        self._runtime = runtime or ModelRuntime.shared()
 
-        self._runtime = ModelRuntime()
-
-        self._assets = self._runtime.load(
+    @property
+    def _assets(self):
+        return self._runtime.load(
             model_name=self.MODEL_NAME,
             model_cls=SentenceTransformer,
         )

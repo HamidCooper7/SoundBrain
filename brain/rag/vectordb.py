@@ -18,9 +18,9 @@ class QwenEmbeddingFunction(
     EmbeddingFunction
 ):
 
-    def __init__(self):
-
-        self.model = get_embedding_model()
+    @property
+    def model(self):
+        return get_embedding_model()
 
     def __call__(
         self,

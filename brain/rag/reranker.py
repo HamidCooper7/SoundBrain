@@ -1,15 +1,18 @@
 from sentence_transformers import CrossEncoder
 
-MODEL_PATH = r"E:\SoundBrain\models\bge-reranker-v2-m3"
+from brain.runtime import ModelRuntime
 
-print("Loading Reranker...")
 
-model = CrossEncoder(
-    MODEL_PATH,
-    trust_remote_code=True,
-)
+MODEL_NAME = "bge-reranker-v2-m3"
 
-print("Reranker Ready")
+
+def get_reranker(runtime: ModelRuntime | None = None) -> CrossEncoder:
+    assets = (runtime or ModelRuntime.shared()).load(
+        model_name=MODEL_NAME,
+        model_cls=CrossEncoder,
+        trust_remote_code=True,
+    )
+    return assets.model
 
 
 def rerank(
@@ -26,7 +29,7 @@ def rerank(
         for doc in documents
     ]
 
-    scores = model.predict(
+    scores = get_reranker().predict(
         pairs,
         show_progress_bar=False,
     )

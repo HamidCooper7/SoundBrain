@@ -19,17 +19,20 @@ class CLAPEmbedding(AudioEmbeddingModel):
 
     MODEL_NAME = "laion/clap-htsat-unfused"
 
-    def __init__(self) -> None:
+    def __init__(self, runtime: ModelRuntime | None = None) -> None:
+        self._runtime = runtime or ModelRuntime.shared()
 
-        self._runtime = ModelRuntime()
-
-        self._audio_assets = self._runtime.load(
+    @property
+    def _audio_assets(self):
+        return self._runtime.load(
             model_name=self.MODEL_NAME,
             model_cls=ClapAudioModelWithProjection,
             processor_cls=ClapProcessor,
         )
 
-        self._text_assets = self._runtime.load(
+    @property
+    def _text_assets(self):
+        return self._runtime.load(
             model_name=self.MODEL_NAME,
             model_cls=ClapModel,
             processor_cls=ClapProcessor,
