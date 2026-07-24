@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-import torch
-
 from brain.audio.embeddings.clap import CLAPEmbedding
 from brain.audio.embeddings.factory import EmbeddingFactory
 from brain.audio.embeddings.models import EmbeddingCapability
 from brain.audio.embeddings.registry import EmbeddingRegistry
 from brain.audio.embeddings.tasks import EmbeddingTask
+from brain.runtime import DeviceManager
 
 
 def create_embedding_registry() -> EmbeddingRegistry:
@@ -25,7 +24,7 @@ def create_embedding_registry() -> EmbeddingRegistry:
                 }
             ),
             backend="transformers",
-            device="cuda" if torch.cuda.is_available() else "cpu",
+            device=str(DeviceManager.detect()),
         ),
         provider=provider,
     )
