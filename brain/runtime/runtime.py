@@ -7,6 +7,7 @@ from typing import Any, Mapping
 import torch
 
 from .cache import ModelCache
+from .capabilities import Capability, CapabilityRegistry, registry
 from .device import DeviceManager
 from .loader import ModelLoader
 from .models import LoadedModelAssets, ModelSpec, freeze_options
@@ -27,12 +28,10 @@ class ModelRuntime:
         repository: ModelRepository | None = None,
         device: torch.device | None = None,
     ) -> None:
-
         self.device = device or DeviceManager.detect()
-
         self.cache = ModelCache()
-
         self.loader = loader or ModelLoader(repository or ModelRepository())
+        self._capabilities: CapabilityRegistry = registry
         self._model_locks: dict[ModelSpec, RLock] = {}
         self._model_locks_lock = RLock()
 
@@ -45,11 +44,16 @@ class ModelRuntime:
 
     @property
     def dtype(self) -> torch.dtype:
+        return torch.float16 if self.device.type == "cuda" else torch.float32
 
-        if self.device.type == "cuda":
-            return torch.float16
+    def capabilities(self) -> tuple[Capability, ...]:
+        return self._capabilities.all()
 
-        return torch.float32
+    def capability(self, name: str) -> Capability | None:
+        return self._capabilities.get(name)
+
+    def has_capability(self, name: str) -> bool:
+        return self._capabilities.exists(name)
 
     def load(
         self,
@@ -68,7 +72,6 @@ class ModelRuntime:
         tokenizer_options: Mapping[str, Any] | None = None,
         processor_options: Mapping[str, Any] | None = None,
     ) -> LoadedModelAssets:
-
         target_device = device or self.device
         target_dtype = dtype or self.dtype
         spec = ModelSpec(
@@ -87,7 +90,6 @@ class ModelRuntime:
             cached = self.cache.get(spec)
             if cached is not None:
                 return cached
-
             assets = self.loader.load(
                 spec=spec,
                 model_cls=model_cls,
@@ -95,17 +97,11 @@ class ModelRuntime:
                 tokenizer_cls=tokenizer_cls,
                 feature_extractor_cls=feature_extractor_cls,
             )
-
-        # SentenceTransformer خودش Device را مدیریت می‌کند.
             if hasattr(assets.model, "to") and "device_map" not in dict(spec.model_options):
-
                 assets.model = assets.model.to(target_device, dtype=target_dtype)
-
             assets.device = target_device
             assets.dtype = target_dtype
-
             self.cache.put(spec, assets)
-
             return assets
 
     def clear_cache(self) -> None:
@@ -113,7 +109,6 @@ class ModelRuntime:
             self.unload(spec)
 
     def unload(self, spec: ModelSpec) -> None:
-        """Release Runtime-owned model references and CUDA cache safely."""
         with self._lock_for(spec):
             assets = self.cache.pop(spec)
             if assets is None:
@@ -134,41 +129,27 @@ class ModelRuntime:
     def available_models(self) -> tuple[ModelSpec, ...]:
         return self.cache.specs()
 
-    def model_info(
-        self,
-        model_name: str | ModelSpec,
-        model_cls: type | None = None,
-        **identity: Any,
-    ) -> LoadedModelAssets | None:
+    def model_info(self, model_name: str | ModelSpec, model_cls: type | None = None, **identity: Any):
         spec = model_name if isinstance(model_name, ModelSpec) else self._spec_for(model_name, model_cls, **identity)
         return self.cache.get(spec)
 
     def processor(self, model_name: str | ModelSpec, model_cls: type | None = None, **identity: Any):
         assets = self.model_info(model_name, model_cls, **identity)
-        return assets.processor if assets is not None else None
+        return assets.processor if assets else None
 
     def tokenizer(self, model_name: str | ModelSpec, model_cls: type | None = None, **identity: Any):
         assets = self.model_info(model_name, model_cls, **identity)
-        return assets.tokenizer if assets is not None else None
+        return assets.tokenizer if assets else None
 
     def _lock_for(self, spec: ModelSpec) -> RLock:
         with self._model_locks_lock:
             return self._model_locks.setdefault(spec, RLock())
 
-    def _spec_for(
-        self,
-        model_name: str,
-        model_cls: type | None = None,
-        **identity: Any,
-    ) -> ModelSpec:
+    def _spec_for(self, model_name: str, model_cls: type | None = None, **identity: Any) -> ModelSpec:
         return ModelSpec(
             backend=identity.get("backend", "transformers"),
             name=model_name,
-            model_class=(
-                f"{model_cls.__module__}.{model_cls.__qualname__}"
-                if model_cls is not None
-                else identity.get("model_class", "unknown")
-            ),
+            model_class=(f"{model_cls.__module__}.{model_cls.__qualname__}" if model_cls else identity.get("model_class","unknown")),
             revision=identity.get("revision"),
             device=str(identity.get("device", self.device)),
             dtype=str(identity.get("dtype", self.dtype)),

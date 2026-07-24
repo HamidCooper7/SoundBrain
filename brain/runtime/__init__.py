@@ -1,4 +1,10 @@
 from .cache import ModelCache
+from .capabilities import (
+    Capability,
+    CapabilityRegistry,
+    CapabilityStatus,
+    registry,
+)
 from .device import DeviceManager
 from .exceptions import (
     ModelLoadError,
@@ -8,10 +14,14 @@ from .exceptions import (
 )
 from .loader import ModelLoader
 from .models import ModelInfo, ModelSpec
-from .runtime import ModelRuntime
 from .repository import ModelRepository
+from .runtime import ModelRuntime
 
 __all__ = [
+    "Capability",
+    "CapabilityRegistry",
+    "CapabilityStatus",
+    "registry",
     "ModelCache",
     "DeviceManager",
     "ModelInfo",
