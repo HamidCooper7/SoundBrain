@@ -106,17 +106,26 @@ Removed
 
 | Capability | Status |
 |------------|--------|
-| Runtime | Verified |
-| DSP Analysis | Verified |
-| Engineering Engine | Verified |
-| Comparison | Verified |
-| CLAP Embeddings | Verify |
-| RAG | Verify |
-| Reasoning | Verify |
-| Reporting | Verify |
-| Reference AI | In Progress |
+| Runtime | Production |
+| Audio Loading | Production |
+| DSP Analysis | Production |
+| Audio Context | Production |
+| Engineering Analysis | Production |
+| CLAP Embeddings | Verified |
+| Reference Comparison | Verified |
+| RAG Retrieval | Implemented |
+| LLM Reasoning | Implemented |
+| Report Generation | Production |
+| Service Facade | Production |
+| Engine Registry | Production |
+| Orchestration | Implemented |
+| Audio Intelligence | Planned |
 | Mix Intelligence | Planned |
-| CLI | Planned |
+| Plugin Intelligence | Planned |
+| Memory & Learning | Planned |
+| DAW Integration | Planned |
+| Reference AI | In Progress |
+| CLI | In Progress |
 | API | Planned |
 | Desktop UI | Planned |
 

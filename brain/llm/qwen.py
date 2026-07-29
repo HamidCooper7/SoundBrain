@@ -1,9 +1,11 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
+from brain.infrastructure.config import settings
 from brain.runtime import ModelRuntime
 
 
-MODEL_NAME = "lmstudio-community/Qwen2.5-7B-Instruct"
+# Model name is owned by configuration; resolved by ModelRepository.
+MODEL_NAME = settings.models.qwen.name
 
 
 def _assets():

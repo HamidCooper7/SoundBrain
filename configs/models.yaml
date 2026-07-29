@@ -1,0 +1,32 @@
+# SoundBrain Model Registry
+# Every AI model used by SoundBrain is configured here.
+# Model names are resolved by ModelRepository: first as a local folder under
+# models/, then as a Hugging Face model ID or remote source.
+# Business logic must never hardcode model names.
+
+models:
+  clap:
+    # Audio-text embedding model for semantic audio understanding.
+    name: clap-htsat-unfused
+    # Loader backend used by ModelRuntime.
+    backend: transformers
+    # Optional Hugging Face revision or branch.
+    revision: null
+
+  qwen:
+    # Local reasoning LLM used by the reasoning engine.
+    name: lmstudio-community/Qwen2.5-7B-Instruct
+    backend: transformers
+    revision: null
+
+  bge_reranker:
+    # Cross-encoder reranker used by the RAG retrieval stage.
+    name: bge-reranker-v2-m3
+    backend: sentence-transformers
+    revision: null
+
+  text_embedding:
+    # Sentence-transformer model used for text embedding and RAG documents.
+    name: Qwen3-Embedding-0.6B
+    backend: sentence-transformers
+    revision: null

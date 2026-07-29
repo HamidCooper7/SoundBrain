@@ -122,3 +122,155 @@ registry.register(
         status=CapabilityStatus.PRODUCTION,
     )
 )
+
+# ---------------------------------------------------------------------------
+# V1 SoundBrain capabilities
+# ---------------------------------------------------------------------------
+
+registry.register(
+    Capability(
+        name="audio_loading",
+        description="Load and validate audio files via AudioIOService",
+        status=CapabilityStatus.PRODUCTION,
+    )
+)
+
+registry.register(
+    Capability(
+        name="dsp_analysis",
+        description="Deterministic DSP analysis (loudness, spectrum, dynamics, stereo)",
+        status=CapabilityStatus.PRODUCTION,
+    )
+)
+
+registry.register(
+    Capability(
+        name="audio_context",
+        description="Rule-based audio context and source classification",
+        status=CapabilityStatus.PRODUCTION,
+    )
+)
+
+registry.register(
+    Capability(
+        name="engineering_analysis",
+        description="Engineering rule engine that produces scores, issues, and recommendations",
+        status=CapabilityStatus.PRODUCTION,
+    )
+)
+
+registry.register(
+    Capability(
+        name="clap_embedding",
+        description="CLAP-based audio-text semantic embeddings",
+        status=CapabilityStatus.VERIFIED,
+    )
+)
+
+registry.register(
+    Capability(
+        name="reference_comparison",
+        description="Reference versus current mix comparison and reasoned report",
+        status=CapabilityStatus.VERIFIED,
+    )
+)
+
+registry.register(
+    Capability(
+        name="rag_retrieval",
+        description="RAG document retrieval for knowledge-backed answers",
+        status=CapabilityStatus.IMPLEMENTED,
+    )
+)
+
+registry.register(
+    Capability(
+        name="llm_reasoning",
+        description="LLM-based reasoning over analysis and context",
+        status=CapabilityStatus.IMPLEMENTED,
+    )
+)
+
+registry.register(
+    Capability(
+        name="report_generation",
+        description="Structured JSON and Markdown report generation",
+        status=CapabilityStatus.PRODUCTION,
+    )
+)
+
+registry.register(
+    Capability(
+        name="service_facade",
+        description="V1 SoundBrainService unified entry point",
+        status=CapabilityStatus.PRODUCTION,
+    )
+)
+
+registry.register(
+    Capability(
+        name="engine_registry",
+        description="Named engine registry for routing runtime workflows",
+        status=CapabilityStatus.PRODUCTION,
+    )
+)
+
+registry.register(
+    Capability(
+        name="orchestration",
+        description="Planner/Router/Executor orchestration layer",
+        status=CapabilityStatus.IMPLEMENTED,
+    )
+)
+
+registry.register(
+    Capability(
+        name="audio_intelligence",
+        description="Sprint 4+ semantic audio intelligence",
+        status=CapabilityStatus.PLANNED,
+    )
+)
+
+registry.register(
+    Capability(
+        name="mix_intelligence",
+        description="Sprint 5+ mix-aware engineering intelligence",
+        status=CapabilityStatus.PLANNED,
+    )
+)
+
+registry.register(
+    Capability(
+        name="plugin_intelligence",
+        description="Sprint 6+ plugin and preset recommendation",
+        status=CapabilityStatus.PLANNED,
+    )
+)
+
+registry.register(
+    Capability(
+        name="memory_learning",
+        description="Sprint 7+ long-term memory and continuous learning",
+        status=CapabilityStatus.PLANNED,
+    )
+)
+
+registry.register(
+    Capability(
+        name="daw_integration",
+        description="Sprint 8+ DAW plugin and automation integration",
+        status=CapabilityStatus.PLANNED,
+    )
+)
+
+__all__ = [
+    "Capability",
+    "CapabilityRegistry",
+    "CapabilityStatus",
+    "registry",
+]
+
+
+if __name__ == "__main__":
+    for capability in registry:
+        print(f"{capability.name}: {capability.status.value}")

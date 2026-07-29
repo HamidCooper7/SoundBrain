@@ -1,7 +1,11 @@
-from langchain_text_splitters import RecursiveCharacterTextSplitter
+from __future__ import annotations
 
 
 def split_documents(documents):
+
+    # Lazy import to avoid a Windows segfault when langchain_text_splitters
+    # pulls in sentence_transformers at module import time.
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
 
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=700,

@@ -153,9 +153,11 @@ CODE_OF_CONDUCT_v2.md
 
 Sprint:
 
-Runtime Hardening ✅
+Sprint 2.5 — Runtime Validation ⏳ In Progress
 
 Next:
+
+Sprint 2.6 — Core Integration 🔒 Locked
 
 Reference Intelligence
 

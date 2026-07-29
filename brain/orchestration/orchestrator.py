@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from pathlib import Path
+from typing import Any
+
 from brain.orchestration.executor import Executor
 from brain.orchestration.planner import Planner
 from brain.orchestration.router import Router
@@ -27,3 +30,38 @@ class Orchestrator:
         state = self.executor.execute(state)
 
         return state
+
+    def analyze(
+        self,
+        audio_path: str | Path,
+        reference_path: str | Path | None = None,
+        **kwargs: Any,
+    ) -> State:
+        """
+        Execute the V1 SoundBrain deterministic analysis workflow.
+
+        This is a dedicated path that bypasses the generic question planning
+        pipeline and routes directly through ``SoundBrainService``.
+        """
+        from brain.application.soundbrain_service import (
+            AnalysisRequest,
+            SoundBrainService,
+        )
+
+        request = AnalysisRequest(
+            audio_path=audio_path,
+            reference_path=reference_path,
+            **kwargs,
+        )
+
+        service = SoundBrainService()
+        response = service.analyze(request)
+
+        return State(
+            question=f"analyze {audio_path}",
+            audio_path=audio_path,
+            reference_path=reference_path,
+            analysis_request=request,
+            analysis_response=response,
+            report=response.report,
+        )

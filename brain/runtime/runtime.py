@@ -6,6 +6,8 @@ from typing import Any, Mapping
 
 import torch
 
+from brain.infrastructure.config import settings
+
 from .cache import ModelCache
 from .capabilities import Capability, CapabilityRegistry, registry
 from .device import DeviceManager
@@ -30,7 +32,11 @@ class ModelRuntime:
     ) -> None:
         self.device = device or DeviceManager.detect()
         self.cache = ModelCache()
-        self.loader = loader or ModelLoader(repository or ModelRepository())
+        self.loader = loader or ModelLoader(
+            repository or ModelRepository(
+                root=str(settings.runtime.model_root),
+            )
+        )
         self._capabilities: CapabilityRegistry = registry
         self._model_locks: dict[ModelSpec, RLock] = {}
         self._model_locks_lock = RLock()

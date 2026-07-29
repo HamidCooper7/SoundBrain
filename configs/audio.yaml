@@ -1,0 +1,29 @@
+# SoundBrain Audio Processing Defaults
+# Safe defaults for deterministic DSP and feature extraction.
+# These values are used when callers do not provide explicit parameters.
+
+audio:
+  # Default sample rate used for internal audio representations.
+  sample_rate: 48000
+
+  # Target sample rate expected by the CLAP audio embedding model.
+  clap_target_sample_rate: 48000
+
+  # Maximum duration in seconds to process from an input file.
+  # Longer files are truncated to avoid excessive memory use.
+  max_duration_seconds: 300
+
+  # FFT window size for spectral analysis.
+  n_fft: 2048
+
+  # Number of samples between successive frames.
+  hop_length: 512
+
+  # Number of mel-frequency bins for mel-spectrogram features.
+  n_mels: 128
+
+  # Number of MFCC coefficients extracted from the mel spectrogram.
+  n_mfcc: 13
+
+  # Number of chroma bins used for harmonic analysis.
+  n_chroma: 12

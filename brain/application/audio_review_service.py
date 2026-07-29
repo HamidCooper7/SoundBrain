@@ -5,7 +5,8 @@ from pathlib import Path
 
 from brain.audio.analysis import AudioAnalyzer
 from brain.audio.analysis.models import AnalysisResult
-from brain.audio.context import AudioContext, AudioContextDetector
+from brain.audio.context import AudioContext
+from brain.audio.context.detector import AudioContextDetector
 from brain.audio.engineer import AudioEngineer
 from brain.audio.engineer.models import EngineerResult
 from brain.audio.io import AudioIOService

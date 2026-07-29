@@ -245,9 +245,17 @@ Reasoning Engine ✅
 
 Comparison Engine ✅
 
+## Sprint 2.5
+
+Runtime Validation ⏳ In Progress
+
+## Sprint 2.6
+
+Core Integration 🔒 Locked
+
 ## Sprint 6
 
-Reference AI ⏳
+Reference AI ⏳ Waiting
 
 Tasks
 

@@ -1,5 +1,18 @@
 from __future__ import annotations
 
+"""
+Legacy audio embedding models kept for backward compatibility.
+
+This module predates the ``brain.audio.embeddings`` provider registry.
+For new code, use the canonical provider:
+
+    from brain.audio.embeddings.clap import CLAPEmbedding
+
+CLAPAudioEmbeddingModel is preserved only because existing callers
+(AudioIntelligenceAnalyzer, tests/test_intelligence.py) still import it.
+Do not use it in new features.
+"""
+
 from abc import ABC, abstractmethod
 
 import numpy as np
@@ -11,6 +24,7 @@ from transformers import (
     ClapProcessor,
 )
 
+from brain.infrastructure.config import settings
 from brain.runtime import ModelRuntime
 
 
@@ -27,8 +41,15 @@ class AudioEmbeddingModel(ABC):
 class CLAPAudioEmbeddingModel(
     AudioEmbeddingModel
 ):
+    """
+    Legacy CLAP audio embedding provider.
 
-    MODEL_NAME = "clap-htsat-unfused"
+    Use ``brain.audio.embeddings.clap.CLAPEmbedding`` for new code.
+    This class is preserved only for existing callers.
+    """
+
+    # Model name is owned by configuration; resolved by ModelRepository.
+    MODEL_NAME = settings.models.clap.name
 
     TARGET_SAMPLE_RATE = 48000
 

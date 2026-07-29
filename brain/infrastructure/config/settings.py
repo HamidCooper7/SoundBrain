@@ -2,13 +2,21 @@ from __future__ import annotations
 
 from brain.infrastructure.config.models import (
     AppConfig,
+    AudioConfig,
     ChromaConfig,
     EmbeddingConfig,
     LLMConfig,
+    LoggingConfig,
+    ModelsConfig,
+    RuntimeConfig,
 )
 
 
-settings = AppConfig(
+DEFAULT_SETTINGS = AppConfig(
+    runtime=RuntimeConfig(),
+    logging=LoggingConfig(),
+    audio=AudioConfig(),
+    models=ModelsConfig(),
     llm=LLMConfig(),
     embedding=EmbeddingConfig(),
     chroma=ChromaConfig(),

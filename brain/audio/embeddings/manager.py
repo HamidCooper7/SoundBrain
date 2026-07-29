@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from brain.audio.embeddings.factory import EmbeddingFactory
 from brain.audio.embeddings.models import AudioEmbedding
+from brain.audio.embeddings.tasks import EmbeddingTask
 from brain.audio.io.models import AudioData
 
 
@@ -25,11 +26,15 @@ class EmbeddingManager:
         self,
         provider: str,
         audio: AudioData,
+        task: EmbeddingTask | None = None,
     ) -> AudioEmbedding:
 
         model = self.audio_provider(provider)
 
-        vector = model.encode_audio(audio)
+        vector = model.encode_audio(
+            audio,
+            task=task,
+        )
 
         return AudioEmbedding(
             model=model.name,

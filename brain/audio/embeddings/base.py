@@ -6,6 +6,7 @@ import numpy as np
 
 from brain.audio.io.models import AudioData
 from .models import EmbeddingCapability
+from .tasks import EmbeddingTask
 
 
 class AudioEmbeddingModel(ABC):
@@ -29,6 +30,7 @@ class AudioEmbeddingModel(ABC):
     def encode_audio(
         self,
         audio: AudioData,
+        task: EmbeddingTask | None = None,
     ) -> np.ndarray:
         ...
 
