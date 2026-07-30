@@ -183,16 +183,51 @@ Files
 
 ## Reference AI
 
-Status: In Progress
+Status: ✅ Completed
 
-Tasks
+Description
 
-- Improve Prompt Builder
-- Improve Formatter
-- JSON Output
-- Structured Recommendations
-- Confidence Score
-- Better Engineering Reasoning
+Reference Intelligence was integrated into SoundBrainService.analyze via the
+``reference_path`` option. Multi-reference support, reference intent
+(genre/mood/target/focus), per-reference similarity, metric variance, segment
+deviation structure, and style-aware decision categorization are now in place.
+
+Completed
+
+- Added ``ReferenceIntent``, ``SegmentDeviation``, and decision categorization models.
+- Extended ``ReferenceComparison`` with references, reference_similarities,
+  metric_variance, and segment_deviations.
+- Added multi-reference support in ``ReferenceService`` and ``ReferenceEngine``.
+- Added thin V1 segment deviation implementation in ``ReferenceService``.
+- Updated ``ReferenceReasoner`` to accept intent, build style-aware prompts, and
+  categorize decisions as ``technical_issue``, ``stylistic_difference``, or
+  ``insufficient_evidence``.
+- Integrated ``reference_path`` (single or list) and reference intent fields into
+  ``SoundBrainService.analyze``.
+- Updated CLI with repeatable ``--reference`` and reference intent flags.
+- Added evaluation fixtures under ``tests/assets/reference_eval/``.
+- Added ``tests/test_reference_intelligence.py``, ``tests/test_reference_reasoner.py``,
+  and reference tests in ``tests/test_soundbrain_service.py``.
+
+Files
+
+- brain/reference/models.py
+- brain/reference/engine.py
+- brain/reference/service.py
+- brain/reference/reasoner.py
+- brain/reference/pipeline.py
+- brain/application/soundbrain_service.py
+- main.py
+- tests/test_reference_intelligence.py (new)
+- tests/test_reference_reasoner.py (new)
+- tests/assets/reference_eval/reference_eval_manifest.json (new)
+
+Remaining Notes
+
+- Segment analysis is currently a thin V1 placeholder over the global analysis.
+  Full per-window segmentation is future work (P2).
+- ReferenceAI uses rule-based reasoning; LLM-backed reference reasoning is future
+  work (P2).
 
 ---
 
@@ -290,42 +325,6 @@ Files
 
 ---
 
-## Sprint 2.6 — Platform Finalization
-
-Status: ✅ Completed
-
-Description
-
-Sprint 2.6 closed the platform surface before Core Integration (Sprint 3).
-
-Completed
-
-- Created `brain.application.soundbrain_service` with `SoundBrainService` and V1
-  `AnalysisRequest` / `AnalysisResponse`.
-- Routed `main.py` through `SoundBrainService`.
-- Extended `Orchestrator` and `State` to carry a V1 `AnalysisRequest` and
-  `AnalysisResponse`.
-- Registered V1 capabilities in `brain.runtime.capabilities`.
-- Created `brain.runtime.engine_registry` with `audio_review`,
-  `reference_comparison`, and `soundbrain` engines.
-- Made `brain.embedding` lazy-import `sentence_transformers` to avoid heavy
-  module-level imports.
-- Added `tests/test_soundbrain_service.py` and `tests/test_engine_registry.py`.
-
-Files
-
-- brain/application/soundbrain_service.py (new)
-- brain/runtime/engine_registry.py (new)
-- brain/runtime/capabilities.py
-- brain/orchestration/orchestrator.py
-- brain/orchestration/state.py
-- brain/embedding.py
-- main.py
-- tests/test_soundbrain_service.py (new)
-- tests/test_engine_registry.py (new)
-
----
-
 ## Environment Note — PyArrow Faulthandler Noise on Windows
 
 Status: P3 — Environment quirk
@@ -388,6 +387,105 @@ Files
 - main.py
 - tests/test_soundbrain_service.py (new)
 - tests/test_engine_registry.py (new)
+
+---
+
+## Sprint 3 — Core Integration
+
+Status: ✅ Completed
+
+Description
+
+Sprint 3 wired the V1 deterministic and optional AI components into a single
+end-to-end flow: Audio → Analysis → Context → Knowledge (RAG) → Reasoning →
+Engineering → Report.
+
+Completed
+
+- Added `include_semantic_analysis` to `AnalysisRequest` and passed it through
+  to `AudioReviewService`.
+- Wired RAG retrieval in `SoundBrainService` with safe query building and
+  graceful fallback when Chroma is empty or unavailable.
+- Wired LLM reasoning in `SoundBrainService` and rebuilt the final report with
+  the LLM-generated `ai_summary` when reasoning succeeds.
+- Preserved deterministic report fields (score, issues, recommendations,
+  strengths, semantic_labels) during reasoning rebuild.
+- Replaced bare `print()` statements with `logging` in `brain.rag.pipeline`,
+  `brain.pipeline.engine`, and `brain.orchestration.executor`.
+- Updated `main.py` CLI with `--reasoning`, `--rag`, `--semantic`, `--intent`,
+  `--delivery-target`, and `--reference` flags.
+- Updated `Orchestrator.analyze` to accept and pass the new flags.
+- Added integration and optional-feature tests:
+  - `tests/test_soundbrain_service_integration.py`
+  - `tests/test_soundbrain_service_rag.py`
+  - `tests/test_soundbrain_service_semantic.py`
+  - `tests/test_soundbrain_service_reasoning.py`
+
+Files
+
+- brain/application/soundbrain_service.py
+- brain/application/audio_review_service.py
+- brain/orchestration/orchestrator.py
+- brain/rag/pipeline.py
+- brain/pipeline/engine.py
+- brain/orchestration/executor.py
+- main.py
+- tests/test_soundbrain_service_integration.py (new)
+- tests/test_soundbrain_service_rag.py (new)
+- tests/test_soundbrain_service_semantic.py (new)
+- tests/test_soundbrain_service_reasoning.py (new)
+
+---
+
+## Sprint 4 — Reference Intelligence Integration
+
+Status: ✅ Completed
+
+Description
+
+Sprint 4 enhanced the reference comparison path and merged it into the V1
+SoundBrainService workflow.
+
+Completed
+
+- Added reference intent fields (`genre`, `mood`, `target`, `focus_areas`) to
+  the reference models and `AnalysisRequest`.
+- Added multi-reference support to `SoundBrainService.analyze`.
+- Added `ReferenceService.compare_files_multiple` and
+  `ReferenceEngine.compare_files_multiple`.
+- Computed per-reference similarity scores and metric variance across references.
+- Added `SegmentDeviation` structure with a thin V1 implementation over the
+  global analysis.
+- Updated `ReferenceReasoner` to build style-aware prompts and categorize
+  decisions as `technical_issue`, `stylistic_difference`, or
+  `insufficient_evidence`.
+- Updated `main.py` with repeatable `--reference` and reference intent flags.
+- Added evaluation fixtures under `tests/assets/reference_eval/`.
+- Added reference intelligence tests.
+
+Files
+
+- brain/reference/models.py
+- brain/reference/engine.py
+- brain/reference/service.py
+- brain/reference/reasoner.py
+- brain/reference/pipeline.py
+- brain/application/soundbrain_service.py
+- main.py
+- tests/test_reference_intelligence.py (new)
+- tests/test_reference_reasoner.py (new)
+- tests/test_soundbrain_service.py
+- tests/assets/reference_eval/reference_eval_manifest.json (new)
+
+---
+
+## Blockers for Sprint 5 — Mix Intelligence
+
+- **Real Whisper provider / test** — P2
+- **Real Qwen provider / test** — P2
+- **Full per-window segment analysis** — P2 (currently thin implementation)
+- **LLM-backed reference reasoning** — P2 (currently rule-based)
+- **CUDA validation** — P2 (only CPU tested)
 
 ---
 

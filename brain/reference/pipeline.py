@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from pathlib import Path
 
 from .engine import ReferenceEngine
+from .models import ReferenceIntent, ReferenceReport
 from .reasoner import ReferenceReasoner
 from .report_builder import ReferenceReportBuilder
-from .models import ReferenceReport
 
 
 class ReferencePipeline:
@@ -42,35 +43,40 @@ class ReferencePipeline:
         report_builder: ReferenceReportBuilder | None = None,
     ) -> None:
 
-        self.engine = (
-            engine
-            or ReferenceEngine()
-        )
+        self.engine = engine or ReferenceEngine()
 
-        self.reasoner = (
-            reasoner
-            or ReferenceReasoner()
-        )
+        self.reasoner = reasoner or ReferenceReasoner()
 
-        self.report_builder = (
-            report_builder
-            or ReferenceReportBuilder()
-        )
+        self.report_builder = report_builder or ReferenceReportBuilder()
 
     def run(
         self,
-        reference_audio: str | Path,
+        reference_audio: str | Path | Sequence[str | Path],
         current_audio: str | Path,
         output_directory: str | Path | None = None,
+        *,
+        intent: ReferenceIntent | None = None,
     ) -> ReferenceReport:
 
-        report = self.engine.compare_files(
-            reference_audio,
-            current_audio,
-        )
+        if isinstance(reference_audio, (str, Path)):
+
+            report = self.engine.compare_files(
+                reference_audio,
+                current_audio,
+                intent=intent,
+            )
+
+        else:
+
+            report = self.engine.compare_files_multiple(
+                reference_audio,
+                current_audio,
+                intent=intent,
+            )
 
         report.comparison = self.reasoner.reason(
             report.comparison,
+            intent=intent,
         )
 
         if output_directory is not None:
@@ -86,38 +92,42 @@ class ReferencePipeline:
 
             self.report_builder.save_json(
                 report,
-                output_directory
-                / "reference_report.json",
+                output_directory / "reference_report.json",
             )
 
             self.report_builder.save_markdown(
                 report,
-                output_directory
-                / "reference_report.md",
+                output_directory / "reference_report.md",
             )
 
         return report
 
     def compare(
         self,
-        reference_audio: str | Path,
+        reference_audio: str | Path | Sequence[str | Path],
         current_audio: str | Path,
+        *,
+        intent: ReferenceIntent | None = None,
     ) -> ReferenceReport:
 
         return self.run(
             reference_audio=reference_audio,
             current_audio=current_audio,
+            intent=intent,
         )
 
     def compare_and_export(
         self,
-        reference_audio: str | Path,
+        reference_audio: str | Path | Sequence[str | Path],
         current_audio: str | Path,
         output_directory: str | Path,
+        *,
+        intent: ReferenceIntent | None = None,
     ) -> ReferenceReport:
 
         return self.run(
             reference_audio=reference_audio,
             current_audio=current_audio,
             output_directory=output_directory,
+            intent=intent,
         )

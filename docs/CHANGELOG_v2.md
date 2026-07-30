@@ -1,6 +1,23 @@
 
 # Changelog
 
+## Unreleased
+
+- Added Sprint 4 — Reference Intelligence Integration.
+  - `ReferenceIntent`, `SegmentDeviation`, and decision categorization models.
+  - Multi-reference support in `ReferenceService`, `ReferenceEngine`, and `SoundBrainService`.
+  - Per-reference similarity, metric variance, and thin V1 segment deviations.
+  - Style-aware `ReferenceReasoner` prompt builder and decision categorization
+    (`technical_issue`, `stylistic_difference`, `insufficient_evidence`).
+  - `SoundBrainService.analyze` accepts `reference_path` as a single path or list
+    and passes reference intent context to the comparison pipeline.
+  - CLI `reference` command uses `reference <current.wav> <reference.wav> [...]` and
+    writes `reference_report.json` plus `reference_report.md` to its output directory.
+  - Added evaluation fixtures under `tests/assets/reference_eval/`.
+
+- The reference CLI command uses `reference <current.wav> <reference.wav> [...]` and
+  writes `reference_report.json` plus `reference_report.md` to its output directory.
+
 All notable changes to SoundBrain are documented in this file.
 
 The project follows a continuous architecture-first development process.

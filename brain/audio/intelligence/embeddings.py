@@ -166,7 +166,8 @@ class CLAPAudioEmbeddingModel(
 
         inputs = {
             key: value.to(
-                self.device
+                self.device,
+                dtype=self._assets.dtype,
             )
             for key, value in inputs.items()
         }

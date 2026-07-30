@@ -14,9 +14,10 @@
   Sprint 2.4   ✅ Completed 100%
   Sprint 2.5   ✅ Completed 100%
   Sprint 2.6   ✅ Completed 100%
-  Sprint 3     ⏳ In Progress 0%
-  Sprint 4     ⏳ Waiting    0%
-  Sprint 5     ⏳ Waiting    0%
+  Sprint 3     ✅ Completed 100%
+  Sprint 4     ✅ Completed 100%
+  Sprint 5     ⏳ In Progress 0%
+  Sprint 6     ⏳ Waiting    0%
   Sprint 6     ⏳ Waiting    0%
   Sprint 7     ⏳ Waiting    0%
   Sprint 8     ⏳ Waiting    0%
@@ -68,13 +69,18 @@ Blocked By: - Sprint 2.5 completion
 
 # Sprint 3 --- Core Integration
 
--   [ ] Audio → Analysis
--   [ ] Analysis → Context
--   [ ] Context → Knowledge
--   [ ] Knowledge → Reasoning
--   [ ] Reasoning → Engineering
--   [ ] Engineering → Report
--   [ ] End-to-End Pipeline
+-   [x] Audio → Analysis (via AudioReviewService)
+-   [x] Analysis → Context (AudioContextDetector)
+-   [x] Context → Knowledge (RAG retrieval wired)
+-   [x] Knowledge → Reasoning (LLM reasoning wired)
+-   [x] Reasoning → Engineering (report rebuilt with reasoning output)
+-   [x] Engineering → Report (ReportBuilder)
+-   [x] End-to-End Pipeline (SoundBrainService + main.py + Orchestrator)
+-   [x] Replace bare print() with logging in pipeline modules
+-   [x] Add integration and optional feature tests
+-   [x] Update CLI with --reasoning, --rag, --semantic, --intent, --delivery-target, --reference
+-   [x] Update Orchestrator.analyze to pass new flags
+-   [x] Update Capability Registry and Technical Debt
 
 Blocked By: - Sprint 2.6 completion
 
@@ -82,10 +88,21 @@ Blocked By: - Sprint 2.6 completion
 
 # Sprint 4 --- Reference Intelligence
 
--   [ ] Multi-reference
--   [ ] Intelligent comparison
--   [ ] Style-aware reasoning
--   [ ] Recommendation engine
+CLI compatibility note: the reference command uses
+`soundbrain reference <current.wav> <reference.wav> [additional_reference.wav ...]`.
+This positional ordering is intentional for the multi-reference command and supersedes
+the previous single-reference ordering.
+
+-   [x] Capture reference intent (genre, mood, target, focus areas)
+-   [x] Multi-reference support in SoundBrainService
+-   [x] Per-reference similarity and metric variance
+-   [x] Segment deviation structure (thin V1 implementation)
+-   [x] Style-aware reasoning with decision categorization
+-   [x] Integrate reference comparison into SoundBrainService.analyze
+-   [x] Update CLI with repeatable --reference and intent flags
+-   [x] Add evaluation fixtures under tests/assets/reference_eval/
+-   [x] Add reference intelligence tests
+-   [x] Update Capability Registry and Technical Debt
 
 ------------------------------------------------------------------------
 

@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import logging
 from uuid import uuid4
 
 from brain.rag.loader import load_documents
@@ -5,24 +8,27 @@ from brain.rag.splitter import split_documents
 from brain.rag.vectordb import collection
 
 
+logger = logging.getLogger(__name__)
+
+
 BATCH_SIZE = 64
 
 
 def build_database(data_path):
 
-    print("Loading documents...")
+    logger.info("Loading documents...")
     docs = load_documents(data_path)
-    print(f"Loaded {len(docs)} documents")
+    logger.info("Loaded %d documents", len(docs))
 
-    print("Splitting...")
+    logger.info("Splitting...")
     chunks = split_documents(docs)
-    print(f"Created {len(chunks)} chunks")
+    logger.info("Created %d chunks", len(chunks))
 
     texts = [chunk.page_content for chunk in chunks]
     metadatas = [chunk.metadata for chunk in chunks]
     ids = [str(uuid4()) for _ in chunks]
 
-    print("Adding to Chroma...")
+    logger.info("Adding to Chroma...")
 
     total = len(chunks)
 
@@ -34,8 +40,8 @@ def build_database(data_path):
             metadatas=metadatas[i:i + BATCH_SIZE],
         )
 
-        print(f"Added {min(i + BATCH_SIZE, total)}/{total}")
+        logger.info("Added %d/%d", min(i + BATCH_SIZE, total), total)
 
-    print("Done!")
+    logger.info("Done!")
 
     return total

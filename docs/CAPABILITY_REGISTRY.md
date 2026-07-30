@@ -112,19 +112,19 @@ Removed
 | Audio Context | Production |
 | Engineering Analysis | Production |
 | CLAP Embeddings | Verified |
-| Reference Comparison | Verified |
+| Reference Comparison | Production |
 | RAG Retrieval | Implemented |
 | LLM Reasoning | Implemented |
 | Report Generation | Production |
 | Service Facade | Production |
 | Engine Registry | Production |
 | Orchestration | Implemented |
-| Audio Intelligence | Planned |
-| Mix Intelligence | Planned |
+| Audio Intelligence | Verified |
+| Reference AI | Verified |
+| Mix Intelligence | In Progress |
 | Plugin Intelligence | Planned |
 | Memory & Learning | Planned |
 | DAW Integration | Planned |
-| Reference AI | In Progress |
 | CLI | In Progress |
 | API | Planned |
 | Desktop UI | Planned |

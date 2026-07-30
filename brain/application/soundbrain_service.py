@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+import logging
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
@@ -8,8 +9,10 @@ from brain.audio.analysis.models import AnalysisResult
 from brain.audio.context.models import AudioContext
 from brain.audio.engineer.models import EngineerResult
 from brain.audio.io.models import AudioData
-from brain.reference.models import ReferenceComparison
+from brain.reference.models import ReferenceComparison, ReferenceIntent
 from brain.report.models import SoundBrainReport
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(slots=True, frozen=True)
@@ -18,16 +21,22 @@ class AnalysisRequest:
     V1 SoundBrain analysis request.
 
     The deterministic audio review flow is always executed. Optional features
-    (reference comparison, LLM reasoning, RAG retrieval) are flag-gated and
-    gracefully degrade when disabled or unavailable.
+    (reference comparison, LLM reasoning, RAG retrieval, CLAP semantic analysis)
+    are flag-gated and gracefully degrade when disabled or unavailable.
     """
 
     audio_path: str | Path
-    reference_path: str | Path | None = None
+    reference_path: str | Path | list[str | Path] | None = None
+    reference_output_directory: str | Path | None = None
     intent: str = ""
     delivery_target: str = ""
+    reference_genre: str | None = None
+    reference_mood: str | None = None
+    reference_target: str | None = None
+    reference_focus: list[str] = field(default_factory=list)
     include_reasoning: bool = False
     include_rag: bool = False
+    include_semantic_analysis: bool = False
     output_path: str | Path | None = None
 
 
@@ -82,14 +91,11 @@ class SoundBrainService:
             AudioReviewService,
         )
 
-        review_service = (
-            self._audio_review_service
-            or AudioReviewService()
-        )
+        review_service = self._audio_review_service or AudioReviewService()
 
         review_request = AudioReviewRequest(
             audio_path=request.audio_path,
-            include_semantic_analysis=False,
+            include_semantic_analysis=request.include_semantic_analysis,
             summary=request.intent or request.delivery_target or "",
             output_path=request.output_path,
         )
@@ -97,12 +103,42 @@ class SoundBrainService:
 
         comparison = self._run_reference_comparison(request)
 
+        rag_context = ""
+        if request.include_rag:
+            rag_context = self._run_rag_retrieval(
+                review_result.context,
+                review_result.engineering,
+                request,
+            )
+
+        report = review_result.report
+        if request.include_reasoning:
+            reference_summary = ""
+            if comparison is not None:
+                reference_summary = self._format_reference_summary(comparison)
+            reasoning_answer = self._run_reasoning(
+                review_result=review_result,
+                rag_context=rag_context,
+                reference_summary=reference_summary,
+                request=request,
+            )
+            if reasoning_answer:
+                report = self._rebuild_report_with_reasoning(
+                    review_result=review_result,
+                    ai_answer=reasoning_answer,
+                )
+
+        if request.output_path is not None and review_result.report is not report:
+            from brain.report import ReportExporter
+
+            ReportExporter().save_json(report, str(request.output_path))
+
         return AnalysisResponse(
             audio=review_result.audio,
             analysis=review_result.analysis,
             context=review_result.context,
             engineering=review_result.engineering,
-            report=review_result.report,
+            report=report,
             comparison=comparison,
         )
 
@@ -113,8 +149,9 @@ class SoundBrainService:
         """
         Run the reference comparison pipeline when a reference path is provided.
 
-        Returns ``None`` if no reference path is supplied or if the comparison
-        fails. This keeps the deterministic report intact.
+        Supports a single reference or a list of references. Returns ``None`` if
+        no reference path is supplied or if the comparison fails. This keeps the
+        deterministic report intact.
         """
         if request.reference_path is None:
             return None
@@ -123,10 +160,190 @@ class SoundBrainService:
             from brain.reference.pipeline import ReferencePipeline
 
             pipeline = self._reference_pipeline or ReferencePipeline()
+
+            intent = ReferenceIntent(
+                genre=request.reference_genre,
+                mood=request.reference_mood,
+                target=(request.reference_target or request.delivery_target or None),
+                focus_areas=request.reference_focus,
+            )
+
             report = pipeline.run(
                 reference_audio=request.reference_path,
                 current_audio=request.audio_path,
+                output_directory=request.reference_output_directory,
+                intent=intent,
             )
             return report.comparison
-        except Exception:
+        except Exception as exc:
+            logger.warning(
+                "Reference comparison failed: %s",
+                exc,
+                exc_info=logger.isEnabledFor(logging.DEBUG),
+            )
             return None
+
+    def _format_reference_summary(
+        self,
+        comparison: ReferenceComparison,
+    ) -> str:
+        """Format a short reference comparison summary for reasoning context."""
+
+        parts = [
+            "Reference comparison summary:",
+            f"  Overall similarity: {comparison.similarity:.2f}%",
+        ]
+
+        if comparison.reference_similarities:
+            parts.append("  Per-reference similarity:")
+            for path, similarity in comparison.reference_similarities.items():
+                parts.append(f"    - {Path(path).name}: {similarity:.2f}%")
+
+        if comparison.metric_variance:
+            parts.append("  High-variance metrics:")
+            for metric, value in comparison.metric_variance.items():
+                if value > 0.01:
+                    parts.append(f"    - {metric}: {value:.4f}")
+
+        if comparison.segment_deviations:
+            parts.append("  Key deviations:")
+            for seg in comparison.segment_deviations[:5]:
+                parts.append(
+                    f"    - {seg.start_time:.1f}s-{seg.end_time:.1f}s "
+                    f"{seg.metric}: Δ={seg.current_value - seg.reference_value:.2f}"
+                )
+
+        return "\n".join(parts)
+
+    def _run_rag_retrieval(
+        self,
+        context: AudioContext,
+        engineering: EngineerResult,
+        request: AnalysisRequest,
+    ) -> str:
+        """
+        Retrieve relevant documents from the RAG collection.
+
+        Returns a formatted context string, or an empty string if retrieval is
+        unavailable or fails. This never breaks the deterministic report.
+        """
+        try:
+            from brain.rag.retriever import retrieve
+        except Exception as exc:
+            logger.warning(
+                "RAG retriever unavailable: %s",
+                exc,
+                exc_info=logger.isEnabledFor(logging.DEBUG),
+            )
+            return ""
+
+        query_parts = [request.intent, request.delivery_target, context.audio_type]
+        query_parts.extend(issue.title for issue in engineering.issues)
+        query = " ".join(part for part in query_parts if part).strip()
+
+        if not query:
+            logger.debug("RAG query is empty; skipping retrieval.")
+            return ""
+
+        try:
+            documents = retrieve(query, k=5)
+        except Exception as exc:
+            logger.warning(
+                "RAG retrieval failed: %s",
+                exc,
+                exc_info=logger.isEnabledFor(logging.DEBUG),
+            )
+            return ""
+
+        if not documents:
+            logger.debug("RAG retrieval returned no documents.")
+            return ""
+
+        formatted = ["Retrieved knowledge:"]
+        for doc in documents[:5]:
+            source = doc.get("source", "unknown")
+            text = doc.get("text", "").strip()
+            if text:
+                formatted.append(f"- [{source}] {text}")
+
+        return "\n".join(formatted)
+
+    def _run_reasoning(
+        self,
+        *,
+        review_result: Any,
+        rag_context: str,
+        reference_summary: str,
+        request: AnalysisRequest,
+    ) -> str:
+        """
+        Run LLM reasoning over the deterministic results.
+
+        Returns the LLM answer as a string, or an empty string if reasoning fails
+        or is unavailable.
+        """
+        try:
+            from brain.reasoning.engine import ReasoningEngine
+            from brain.reasoning.models import ReasoningContext
+        except Exception as exc:
+            logger.warning(
+                "Reasoning engine unavailable: %s",
+                exc,
+                exc_info=logger.isEnabledFor(logging.DEBUG),
+            )
+            return ""
+
+        question_parts = [request.intent, request.delivery_target]
+        if reference_summary:
+            question_parts.append(reference_summary)
+        if rag_context:
+            question_parts.append(rag_context)
+        question = "\n\n".join(part for part in question_parts if part).strip()
+
+        if not question:
+            question = "Provide an engineering summary of the audio analysis."
+
+        try:
+            engine = ReasoningEngine()
+            result = engine.ask(
+                ReasoningContext(
+                    analysis=review_result.analysis,
+                    engineer=review_result.engineering,
+                    audio_context=review_result.context,
+                    question=question,
+                )
+            )
+        except Exception as exc:
+            logger.warning(
+                "Reasoning failed: %s",
+                exc,
+                exc_info=logger.isEnabledFor(logging.DEBUG),
+            )
+            return ""
+
+        if not result.answer:
+            return ""
+
+        return result.answer
+
+    def _rebuild_report_with_reasoning(
+        self,
+        *,
+        review_result: Any,
+        ai_answer: str,
+    ) -> SoundBrainReport:
+        """
+        Rebuild the deterministic report with the LLM-generated summary.
+
+        All deterministic fields are preserved; only ``ai_summary`` is updated.
+        """
+        from brain.report import ReportBuilder
+
+        rebuilt = ReportBuilder().build(
+            analysis=review_result.analysis,
+            engineer=review_result.engineering,
+            audio_context=review_result.context,
+            ai_answer=ai_answer,
+        )
+
+        return replace(review_result.report, ai_summary=rebuilt.ai_summary)

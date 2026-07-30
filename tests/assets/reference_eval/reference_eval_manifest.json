@@ -1,0 +1,46 @@
+{
+  "description": "Lightweight reference intelligence evaluation set.",
+  "tests": [
+    {
+      "name": "single_reference_loudness",
+      "current": "tests/audio.wav",
+      "references": [
+        "tests/audio.wav"
+      ],
+      "intent": {
+        "genre": "pop",
+        "target": "streaming",
+        "focus_areas": [
+          "loudness",
+          "dynamics"
+        ]
+      },
+      "expected_primary_conclusion": "loudness lower than reference",
+      "focus_areas": [
+        "loudness",
+        "dynamics"
+      ]
+    },
+    {
+      "name": "multi_reference_consistency",
+      "current": "tests/audio.wav",
+      "references": [
+        "tests/audio.wav",
+        "tests/audio.wav"
+      ],
+      "intent": {
+        "genre": "electronic",
+        "target": "club",
+        "focus_areas": [
+          "stereo",
+          "frequency"
+        ]
+      },
+      "expected_primary_conclusion": "reference tracks are consistent",
+      "focus_areas": [
+        "stereo",
+        "frequency"
+      ]
+    }
+  ]
+}

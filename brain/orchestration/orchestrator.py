@@ -35,6 +35,13 @@ class Orchestrator:
         self,
         audio_path: str | Path,
         reference_path: str | Path | None = None,
+        *,
+        intent: str = "",
+        delivery_target: str = "",
+        include_reasoning: bool = False,
+        include_rag: bool = False,
+        include_semantic_analysis: bool = False,
+        output_path: str | Path | None = None,
         **kwargs: Any,
     ) -> State:
         """
@@ -51,6 +58,12 @@ class Orchestrator:
         request = AnalysisRequest(
             audio_path=audio_path,
             reference_path=reference_path,
+            intent=intent,
+            delivery_target=delivery_target,
+            include_reasoning=include_reasoning,
+            include_rag=include_rag,
+            include_semantic_analysis=include_semantic_analysis,
+            output_path=output_path,
             **kwargs,
         )
 

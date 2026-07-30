@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import logging
+
 from brain.orchestration.state import State
 
 from brain.pipeline.engine import PipelineEngine
@@ -11,6 +13,9 @@ from brain.pipeline.compression_stage import CompressionStage
 from brain.pipeline.prompt_stage import PromptStage
 from brain.pipeline.llm_stage import LLMStage
 from brain.pipeline.vision_stage import VisionStage
+
+
+logger = logging.getLogger(__name__)
 
 
 class Executor:
@@ -54,9 +59,6 @@ class Executor:
         state: State,
     ) -> State:
 
-        print()
-        print("=" * 80)
-        print("EXECUTION")
-        print("=" * 80)
+        logger.info("EXECUTION")
 
         return self.engine.run(state)

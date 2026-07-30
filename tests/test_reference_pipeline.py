@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from brain.reference.pipeline import ReferencePipeline
 from brain.reference.models import (
     ReferenceComparison,
     ReferenceReport,
 )
+from brain.reference.pipeline import ReferencePipeline
 
 
 class FakeEngine:
@@ -15,6 +15,7 @@ class FakeEngine:
         self,
         reference_audio,
         current_audio,
+        intent=None,
     ):
 
         comparison = ReferenceComparison(
@@ -48,6 +49,7 @@ class FakeReasoner:
     def reason(
         self,
         comparison,
+        intent=None,
     ):
         return comparison
 
@@ -75,7 +77,7 @@ class FakeReportBuilder:
         )
 
 
-def test_reference_pipeline():
+def test_reference_pipeline(tmp_path: Path):
 
     pipeline = ReferencePipeline(
         engine=FakeEngine(),
@@ -83,7 +85,7 @@ def test_reference_pipeline():
         report_builder=FakeReportBuilder(),
     )
 
-    output = Path("tests/output")
+    output = tmp_path / "output"
 
     report = pipeline.run(
         "reference.wav",
@@ -93,15 +95,9 @@ def test_reference_pipeline():
 
     assert report.comparison.similarity == 91.2
 
-    assert (
-        output /
-        "reference_report.json"
-    ).exists()
+    assert (output / "reference_report.json").exists()
 
-    assert (
-        output /
-        "reference_report.md"
-    ).exists()
+    assert (output / "reference_report.md").exists()
 
 
 def test_compare():
@@ -120,7 +116,7 @@ def test_compare():
     assert report.summary == "Test"
 
 
-def test_compare_and_export():
+def test_compare_and_export(tmp_path: Path):
 
     pipeline = ReferencePipeline(
         engine=FakeEngine(),
@@ -128,7 +124,7 @@ def test_compare_and_export():
         report_builder=FakeReportBuilder(),
     )
 
-    output = Path("tests/output2")
+    output = tmp_path / "output2"
 
     report = pipeline.compare_and_export(
         "reference.wav",
@@ -138,12 +134,6 @@ def test_compare_and_export():
 
     assert report.comparison.confidence == 0.97
 
-    assert (
-        output /
-        "reference_report.json"
-    ).exists()
+    assert (output / "reference_report.json").exists()
 
-    assert (
-        output /
-        "reference_report.md"
-    ).exists()
+    assert (output / "reference_report.md").exists()
