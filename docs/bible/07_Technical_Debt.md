@@ -364,11 +364,48 @@ Remaining Notes
 
 ---
 
-## Blockers for Sprint 11
+## Sprint 11 — AI Provider Layer
 
--   [ ] Preset export format (VST3/AU) and validation — P2
+Status: ✅ Completed
+
+Completed
+
+-   [x] Created `brain.providers` package with models, base contract, registry, factory,
+        service, and five provider implementations (mock, qwen, gemini, openai, local).
+-   [x] Implemented `BaseAIProvider` abstraction with `GenerateRequest` and
+        `GenerateResponse` contracts.
+-   [x] Implemented `MockProvider` for deterministic tests.
+-   [x] Implemented `QwenProvider` using existing Qwen integration with lazy imports.
+-   [x] Implemented `GeminiProvider`, `OpenAIProvider`, and `LocalProvider` stubs.
+-   [x] Made `QwenProvider` the default production provider.
+-   [x] Rewired `LLMReasoningProvider` to depend only on `BaseAIProvider`.
+-   [x] Updated `LLMConfig.provider` default from `lmstudio` to `qwen`.
+-   [x] Added deterministic tests for factory, registry, mock, service, and reasoning.
+-   [x] Verified `brain.providers` imports without loading torch/transformers.
+
+Files
+
+-   brain/providers/
+-   brain/reasoning/engine.py
+-   brain/infrastructure/config/models.py
+-   tests/test_providers_factory.py
+-   tests/test_providers_mock.py
+-   tests/test_providers_reasoning.py
+
+Remaining Notes
+
+-   HTTP-backed providers (Gemini/OpenAI) are stubs.
+-   Local inference backend (`LocalProvider`) is a stub for future work.
+-   Qwen model must be present locally for real generation.
+
+---
+
+## Blockers for Sprint 12
+
+-   [ ] Real HTTP LLM providers (Gemini/OpenAI) — P2
+-   [ ] Local inference backend abstraction — P2
+-   [ ] Real Qwen model availability / validation test — P2 (carry-over)
 -   [ ] Real Whisper provider / test — P2 (carry-over)
--   [ ] Real Qwen provider / test — P2 (carry-over)
 -   [ ] CUDA validation — P2 (carry-over)
 
 ---

@@ -7,7 +7,7 @@ from pathlib import Path
 @dataclass(slots=True)
 class LLMConfig:
 
-    provider: str = "lmstudio"
+    provider: str = "qwen"
 
     model: str = "local-model"
 
@@ -98,19 +98,13 @@ class ModelEntry:
 @dataclass(slots=True)
 class ModelsConfig:
 
-    clap: ModelEntry = field(
-        default_factory=lambda: ModelEntry(name="clap-htsat-unfused")
-    )
+    clap: ModelEntry = field(default_factory=lambda: ModelEntry(name="clap-htsat-unfused"))
 
     qwen: ModelEntry = field(
-        default_factory=lambda: ModelEntry(
-            name="lmstudio-community/Qwen2.5-7B-Instruct"
-        )
+        default_factory=lambda: ModelEntry(name="lmstudio-community/Qwen2.5-7B-Instruct")
     )
 
-    bge_reranker: ModelEntry = field(
-        default_factory=lambda: ModelEntry(name="bge-reranker-v2-m3")
-    )
+    bge_reranker: ModelEntry = field(default_factory=lambda: ModelEntry(name="bge-reranker-v2-m3"))
 
     text_embedding: ModelEntry = field(
         default_factory=lambda: ModelEntry(name="Qwen3-Embedding-0.6B")

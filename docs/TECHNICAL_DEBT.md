@@ -775,11 +775,68 @@ Remaining Notes
 
 ---
 
-## Blockers for Sprint 11
+## P2 — Sprint 11 — AI Provider Layer
 
--   [ ] Preset export format (VST3/AU) and validation — P2
+Status: ✅ Completed
+
+Description
+
+Sprint 11 introduced an isolated AI Provider layer that abstracts all LLM interactions
+behind a common `BaseAIProvider` interface. The reasoning engine now depends only on
+this abstraction, not on a specific provider or manager.
+
+Completed
+
+- Created `brain.providers` package with `BaseAIProvider`, `GenerateRequest`,
+  `GenerateResponse`, `ProviderRegistry`, `ProviderFactory`, and `ProviderService`.
+- Implemented `MockProvider` for deterministic tests and offline development.
+- Implemented `QwenProvider` using the existing `brain.llm.qwen` integration with lazy
+  transformers import so the provider package remains lightweight at import time.
+- Implemented `GeminiProvider`, `OpenAIProvider`, and `LocalProvider` stubs that raise
+  `NotImplementedError` for future backends.
+- Registered all providers in `ProviderFactory` with lazy default registration.
+- Made `QwenProvider` the default production provider via `ProviderFactory.default()`
+  and updated `LLMConfig.provider` default from `lmstudio` to `qwen`.
+- Rewired `LLMReasoningProvider` to depend only on `BaseAIProvider` and route calls
+  through the standard `GenerateRequest` / `GenerateResponse` contract.
+- Added deterministic tests for factory, registry, mock provider, service facade, and
+  reasoning integration.
+- Verified that `brain.providers` can be imported without loading torch or transformers.
+
+Files
+
+- brain/providers/__init__.py (new)
+- brain/providers/models.py (new)
+- brain/providers/base.py (new)
+- brain/providers/mock.py (new)
+- brain/providers/qwen.py (new)
+- brain/providers/gemini.py (new)
+- brain/providers/openai.py (new)
+- brain/providers/local.py (new)
+- brain/providers/registry.py (new)
+- brain/providers/factory.py (new)
+- brain/providers/service.py (new)
+- brain/reasoning/engine.py (modified)
+- brain/infrastructure/config/models.py (modified)
+- tests/test_providers_factory.py (new)
+- tests/test_providers_mock.py (new)
+- tests/test_providers_reasoning.py (new)
+
+Remaining Notes
+
+- `GeminiProvider`, `OpenAIProvider`, and `LocalProvider` are stubs. Real HTTP client
+  integration and local backend support are future work (Sprint 12+).
+- Qwen model must be available locally for `QwenProvider.generate()` to succeed; the
+  provider layer itself does not download models.
+
+---
+
+## Blockers for Sprint 12
+
+-   [ ] Real HTTP LLM providers (Gemini/OpenAI) — P2
+-   [ ] Local inference backend abstraction (llama.cpp/ollama) — P2
+-   [ ] Real Qwen model availability / validation test — P2 (carry-over)
 -   [ ] Real Whisper provider / test — P2 (carry-over)
--   [ ] Real Qwen provider / test — P2 (carry-over)
 -   [ ] CUDA validation — P2 (carry-over)
 
 ---

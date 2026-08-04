@@ -22,7 +22,8 @@
   Sprint 8     ✅ Completed 100%
   Sprint 9     ✅ Completed 100%
   Sprint 10    ✅ Completed 100%
-  Sprint 11    ⏳ Waiting    0%
+  Sprint 11    ✅ Completed 100%
+  Sprint 12    ⏳ Waiting    0%
 
 ------------------------------------------------------------------------
 
@@ -223,7 +224,27 @@ Blocked By: - Sprint 9 completion
 
 ------------------------------------------------------------------------
 
-# Sprint 11 --- Future Sprint (Placeholder)
+# Sprint 11 --- AI Provider Layer
+
+-   [x] Create `brain.providers` package with models, base contract, registry, factory, and service
+-   [x] Implement `BaseAIProvider` abstraction
+-   [x] Implement `MockProvider` for deterministic tests
+-   [x] Implement `QwenProvider` using the existing Qwen integration (lazy import)
+-   [x] Implement `GeminiProvider` stub (NotImplementedError)
+-   [x] Implement `OpenAIProvider` stub (NotImplementedError)
+-   [x] Implement `LocalProvider` stub (NotImplementedError)
+-   [x] Register all providers in `ProviderFactory`
+-   [x] Make QwenProvider the default production provider
+-   [x] Wire `LLMReasoningProvider` to depend only on `BaseAIProvider`
+-   [x] Add deterministic provider tests (factory, registry, mock, reasoning integration)
+-   [x] Update config default provider from `lmstudio` to `qwen`
+-   [x] Update Capability Registry and Technical Debt
+
+Blocked By: - Sprint 10 completion
+
+------------------------------------------------------------------------
+
+# Sprint 12 --- Future Sprint (Placeholder)
 
 -   [ ] TBD
 

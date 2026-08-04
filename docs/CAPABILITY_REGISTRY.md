@@ -119,6 +119,7 @@ Removed
 | Service Facade | Production |
 | Engine Registry | Production |
 | Orchestration | Implemented |
+| AI Provider Layer | Implemented |
 | Audio Intelligence | Production |
 | Reference AI | Production |
 | Mix Intelligence | Production |
@@ -156,6 +157,37 @@ Removed
 - No OSC, MIDI, ReaScript, Python Remote API, or filesystem automation is performed.
 - All exports are deterministic placeholder files written to `output_dir/<adapter_name>/`.
 - Brands appear only in registry data, never in decision logic.
+
+---
+
+# AI Provider Layer (Sprint 11)
+
+## Providers
+
+- `BaseAIProvider` — abstract contract for all AI providers
+- `MockProvider` — deterministic test provider
+- `QwenProvider` — local Qwen LLM provider (default production provider)
+- `GeminiProvider` — Google Gemini stub
+- `OpenAIProvider` — OpenAI-compatible API stub
+- `LocalProvider` — future local inference backend stub
+
+## Contracts
+
+- `GenerateRequest` — system/user prompts, max tokens, temperature, top-p
+- `GenerateResponse` — generated text, provider name, confidence, token usage metadata
+
+## Services
+
+- `ProviderRegistry` — register and lookup provider instances
+- `ProviderFactory` — lazy registration and default provider resolution
+- `ProviderService` — application facade for generation calls
+
+## Rules
+
+- Business logic depends only on `BaseAIProvider`.
+- No provider-specific logic outside provider implementations.
+- Heavy backends (transformers, torch) are loaded lazily inside `generate()`.
+- Reasoning engine routes through `LLMReasoningProvider` + `BaseAIProvider`.
 
 ---
 
