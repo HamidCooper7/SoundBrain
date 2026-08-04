@@ -731,12 +731,56 @@ Remaining Notes
 
 ---
 
-## Blockers for Sprint 10 — DAW Integration
+## P2 — Sprint 10 — Workflow Integration Contracts
 
-- **Preset export format (VST3/AU) and validation** — P2
-- **Real Whisper provider / test** — P2 (carry-over)
-- **Real Qwen provider / test** — P2 (carry-over)
-- **CUDA validation** — P2 (carry-over)
+Status: ✅ Completed
+
+Description
+
+Sprint 10 delivered deterministic placeholder workflow integration contracts for five
+DAWs: Ableton Live, REAPER, Cubase, FL Studio, and Studio One.
+
+Completed
+
+- Created `brain.integration` package with `WorkflowAdapter`, `BaseWorkflowAdapter`,
+  `ExportRequest`, `ExportResult`, `WorkflowSession`, and `DAWCapability` models.
+- Implemented five concrete adapters as subclasses of `BaseWorkflowAdapter`.
+- Implemented `AdapterFactory` with auto-registration, `get(name)`, `list()`, and `default()`.
+- Added deterministic unit tests covering factory registration, every adapter's
+  capabilities, all four export methods, empty-request handling, and the no-DAW-call rule.
+- Generated example export package under `outputs/integration_example/`.
+- Verified no OSC, MIDI, ReaScript, Python Remote API, or filesystem automation is used.
+
+Files
+
+- brain/integration/__init__.py (new)
+- brain/integration/models.py (new)
+- brain/integration/base.py (new)
+- brain/integration/factory.py (new)
+- brain/integration/ableton.py (new)
+- brain/integration/reaper.py (new)
+- brain/integration/cubase.py (new)
+- brain/integration/flstudio.py (new)
+- brain/integration/studio_one.py (new)
+- tests/test_integration_factory.py (new)
+- tests/test_integration_adapters.py (new)
+- outputs/integration_example/ (generated)
+
+Remaining Notes
+
+- Adapters currently write placeholder JSON and Markdown files. Real VST3/AU preset
+  export and validation are future work (Sprint 11+).
+- Actual DAW communication (OSC, MIDI, ReaScript, remote APIs) is explicitly out of
+  scope for the contract sprint.
+
+---
+
+## Blockers for Sprint 11
+
+-   [ ] Preset export format (VST3/AU) and validation — P2
+-   [ ] Real Whisper provider / test — P2 (carry-over)
+-   [ ] Real Qwen provider / test — P2 (carry-over)
+-   [ ] CUDA validation — P2 (carry-over)
 
 ---
 

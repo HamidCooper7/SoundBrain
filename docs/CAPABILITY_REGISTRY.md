@@ -126,10 +126,36 @@ Removed
 | Knowledge Infrastructure | Implemented |
 | Memory & Personalization | Implemented |
 | Evaluation & Benchmark | Implemented |
-| DAW Integration | Planned |
+| DAW Integration | Implemented |
 | CLI | Production |
 | API | Planned |
 | Desktop UI | Planned |
+
+---
+
+# Workflow Integration Contracts (Sprint 10)
+
+## Adapters
+
+- Ableton Live
+- REAPER
+- Steinberg Cubase
+- FL Studio
+- PreSonus Studio One
+
+## Export Contracts
+
+- `export_analysis` — JSON summary of analysis results
+- `export_processing_chain` — JSON + text processing chain notes
+- `export_plugin_recommendations` — JSON plugin recommendations with parameters
+- `export_report` — JSON + Markdown report export
+
+## Rules
+
+- Adapters are pure contracts in this sprint.
+- No OSC, MIDI, ReaScript, Python Remote API, or filesystem automation is performed.
+- All exports are deterministic placeholder files written to `output_dir/<adapter_name>/`.
+- Brands appear only in registry data, never in decision logic.
 
 ---
 

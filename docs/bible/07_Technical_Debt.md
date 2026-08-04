@@ -335,7 +335,36 @@ Files
 
 ---
 
-## Blockers for Sprint 10 — DAW Integration
+## Sprint 10 — Workflow Integration Contracts
+
+Status: ✅ Completed
+
+Completed
+
+-   [x] Created `brain.integration` package with models, abstract adapter, base adapter,
+        factory, and five DAW adapters (Ableton, Reaper, Cubase, FL Studio, Studio One).
+-   [x] Implemented four export contracts as deterministic placeholder files
+        (analysis, processing chain, plugin recommendations, report).
+-   [x] Added `AdapterFactory` with auto-registration and lookup helpers.
+-   [x] Added deterministic unit tests for factory and adapters.
+-   [x] Generated example export package under `outputs/integration_example/`.
+-   [x] Verified no DAW communication or external APIs are used.
+
+Files
+
+-   brain/integration/
+-   tests/test_integration_factory.py
+-   tests/test_integration_adapters.py
+-   outputs/integration_example/
+
+Remaining Notes
+
+-   Real VST3/AU preset export and validation are future work (Sprint 11+).
+-   Actual DAW communication remains out of scope.
+
+---
+
+## Blockers for Sprint 11
 
 -   [ ] Preset export format (VST3/AU) and validation — P2
 -   [ ] Real Whisper provider / test — P2 (carry-over)

@@ -21,7 +21,8 @@
   Sprint 7     ✅ Completed 100%
   Sprint 8     ✅ Completed 100%
   Sprint 9     ✅ Completed 100%
-  Sprint 10    ⏳ Waiting    0%
+  Sprint 10    ✅ Completed 100%
+  Sprint 11    ⏳ Waiting    0%
 
 ------------------------------------------------------------------------
 
@@ -202,13 +203,29 @@ Blocked By: - Sprint 8 completion
 
 ------------------------------------------------------------------------
 
-# Sprint 10 --- DAW Integration
+# Sprint 10 --- Workflow Integration Contracts
 
--   [ ] Ableton
--   [ ] Cubase
--   [ ] FL Studio
--   [ ] Reaper
--   [ ] Import / Export
+-   [x] Create `brain.integration` package with workflow models
+-   [x] Define `WorkflowAdapter` abstract contract with four export methods
+-   [x] Implement `BaseWorkflowAdapter` placeholder helpers (JSON/text export only)
+-   [x] Create Ableton adapter
+-   [x] Create Reaper adapter
+-   [x] Create Cubase adapter
+-   [x] Create FL Studio adapter
+-   [x] Create Studio One adapter
+-   [x] Create `AdapterFactory` with register / get / list / default
+-   [x] Add deterministic unit tests for factory and every adapter
+-   [x] Verify adapters do not communicate with any DAW
+-   [x] Generate example export package under `outputs/integration_example/`
+-   [x] Update Capability Registry and Technical Debt
+
+Blocked By: - Sprint 9 completion
+
+------------------------------------------------------------------------
+
+# Sprint 11 --- Future Sprint (Placeholder)
+
+-   [ ] TBD
 
 ------------------------------------------------------------------------
 
