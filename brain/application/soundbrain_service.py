@@ -14,6 +14,8 @@ from brain.audio.mix.explanation import ExplanationBuilder
 from brain.audio.mix.models import MixIntelligenceResult
 from brain.audio.mix.priority import PriorityEngine
 from brain.audio.mix.root_cause import RootCauseAnalyzer
+from brain.audio.plugin.models import PluginIntelligenceResult
+from brain.audio.plugin.service import PluginIntelligenceService
 from brain.reference.models import ReferenceComparison, ReferenceIntent
 from brain.report.models import SoundBrainReport
 
@@ -44,6 +46,7 @@ class AnalysisRequest:
     include_rag: bool = False
     include_semantic_analysis: bool = False
     include_mix_intelligence: bool = False
+    include_plugin_intelligence: bool = False
     output_path: str | Path | None = None
 
 
@@ -63,6 +66,7 @@ class AnalysisResponse:
     report: SoundBrainReport
     comparison: ReferenceComparison | None = None
     mix_intelligence: MixIntelligenceResult | None = None
+    plugin_intelligence: PluginIntelligenceResult | None = None
 
 
 class SoundBrainService:
@@ -79,9 +83,11 @@ class SoundBrainService:
         *,
         audio_review_service: Any | None = None,
         reference_pipeline: Any | None = None,
+        plugin_intelligence_service: PluginIntelligenceService | None = None,
     ) -> None:
         self._audio_review_service = audio_review_service
         self._reference_pipeline = reference_pipeline
+        self._plugin_intelligence_service = plugin_intelligence_service
 
     def analyze(
         self,
@@ -121,10 +127,16 @@ class SoundBrainService:
 
         report = review_result.report
         mix_result: MixIntelligenceResult | None = None
+        plugin_result: PluginIntelligenceResult | None = None
         if request.include_mix_intelligence:
             mix_result = self._run_mix_intelligence(review_result)
             if mix_result is not None:
                 report = self._enrich_report_with_mix(report, mix_result)
+
+        if request.include_plugin_intelligence and mix_result is not None:
+            plugin_result = self._run_plugin_intelligence(mix_result, review_result.context)
+            if plugin_result is not None:
+                report = self._enrich_report_with_plugin(report, plugin_result)
 
         if request.include_reasoning:
             reference_summary = ""
@@ -159,6 +171,7 @@ class SoundBrainService:
             report=report,
             comparison=comparison,
             mix_intelligence=mix_result,
+            plugin_intelligence=plugin_result,
         )
 
     def _run_reference_comparison(
@@ -454,3 +467,33 @@ class SoundBrainService:
                 )
 
         return "\n".join(parts)
+
+    def _run_plugin_intelligence(
+        self,
+        mix_result: MixIntelligenceResult,
+        context: AudioContext,
+    ) -> PluginIntelligenceResult | None:
+        """
+        Run deterministic plugin intelligence over the Mix Intelligence result.
+
+        Returns ``None`` if plugin intelligence fails, so the report still contains
+        the Mix Intelligence output.
+        """
+        try:
+            service = self._plugin_intelligence_service or PluginIntelligenceService()
+            return service.analyze(mix_result, context)
+        except Exception as exc:
+            logger.warning(
+                "Plugin intelligence failed: %s",
+                exc,
+                exc_info=logger.isEnabledFor(logging.DEBUG),
+            )
+            return None
+
+    def _enrich_report_with_plugin(
+        self,
+        report: SoundBrainReport,
+        plugin_result: PluginIntelligenceResult,
+    ) -> SoundBrainReport:
+        """Attach deterministic plugin intelligence fields to the report."""
+        return replace(report, plugin_intelligence=plugin_result)

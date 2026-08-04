@@ -243,11 +243,35 @@ Files
 
 ---
 
-## Blockers for Sprint 6 — Plugin Intelligence
+## Sprint 6 — Plugin Intelligence
 
--   [ ] Commercial plugin recommendation dataset — P2
--   [ ] Parameter generation for processing chain — P2
--   [ ] Preset export format (VST3/AU) and validation — P2
+Status: ✅ Completed
+
+Completed
+
+-   [x] Plugin taxonomy and registry (`brain.audio.plugin`).
+-   [x] Parameter generator, selector, chain builder, validator, and service.
+-   [x] Brand-agnostic decision logic; plugin names only inside registry data.
+-   [x] Integration into `SoundBrainService` and `main.py`.
+-   [x] Unit and integration tests.
+
+Files
+
+-   brain/audio/plugin/
+-   configs/plugin_registry.json
+-   brain/application/soundbrain_service.py
+-   brain/report/models.py
+-   brain/report/exporter.py
+-   main.py
+-   tests/test_plugin_*.py
+
+---
+
+## Blockers for Sprint 7 — Memory & Learning
+
+-   [ ] User memory / profile persistence — P2
+-   [ ] Project memory and continuous learning loop — P2
+-   [ ] Preset export format (VST3/AU) and validation — P2 (carry-over)
 -   [ ] Real Whisper provider / test — P2 (carry-over)
 -   [ ] Real Qwen provider / test — P2 (carry-over)
 -   [ ] CUDA validation — P2 (carry-over)

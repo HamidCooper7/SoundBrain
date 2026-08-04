@@ -87,3 +87,27 @@ def test_soundbrain_service_integration_with_mix_intelligence():
 
     # Reasoning is disabled, so ai_summary should be the validated intent text or empty.
     assert report.ai_summary == "" or "integration" not in report.ai_summary.lower()
+
+
+@pytest.mark.skipif(
+    not AUDIO_PATH.exists(),
+    reason="No test audio file is available",
+)
+def test_soundbrain_service_integration_with_plugin_intelligence():
+    """Deterministic flow with plugin intelligence enabled."""
+    request = AnalysisRequest(
+        audio_path=AUDIO_PATH,
+        include_mix_intelligence=True,
+        include_plugin_intelligence=True,
+    )
+
+    service = SoundBrainService()
+    response = service.analyze(request)
+
+    assert response.mix_intelligence is not None
+    assert response.plugin_intelligence is not None
+    report = response.report
+    assert report.plugin_intelligence is not None
+    assert report.plugin_intelligence.goals
+    assert report.plugin_intelligence.steps
+    assert report.plugin_intelligence.explanations

@@ -2,7 +2,7 @@
 
 Version: 0.1.0
 
-Last Updated: 2026-07-28
+Last Updated: 2026-07-31
 
 ---
 
@@ -544,11 +544,60 @@ Files
 
 ---
 
-## Blockers for Sprint 6 — Plugin Intelligence
+## P2 — Sprint 6 — Plugin Intelligence
 
-- **Commercial plugin recommendation dataset** — P2
-- **Parameter generation for processing chain** — P2
-- **Preset export format (VST3/AU) and validation** — P2
+Status: ✅ Completed
+
+Description
+
+Sprint 6 extended Mix Intelligence with Plugin Intelligence: parameter
+recommendations, plugin selection, and validated processing chains. Plugin brands
+exist only inside the registry; decision logic is brand-agnostic.
+
+Completed
+
+- Plugin taxonomy and JSON registry (`configs/plugin_registry.json`).
+- Parameter generator (`brain.audio.plugin.parameter_generator`) executed before plugin selection.
+- Plugin selector (`brain.audio.plugin.selector`) that filters by category, format, and limit.
+- Plugin chain builder (`brain.audio.plugin.chain_builder`) that deduplicates categories and limits chain length.
+- Plugin validator (`brain.audio.plugin.validator`) that clamps parameter ranges and removes mismatched options.
+- Plugin intelligence service (`brain.audio.plugin.service`) orchestrating the pipeline.
+- Integration into `SoundBrainService` via `include_plugin_intelligence` flag.
+- Extension of `SoundBrainReport` and `AnalysisResponse` with `plugin_intelligence` fields.
+- `--plugin-intelligence` CLI flag in `main.py`.
+- Unit and integration tests for all plugin modules.
+
+Files
+
+- brain/audio/plugin/
+- configs/plugin_registry.json
+- brain/application/soundbrain_service.py
+- brain/report/models.py
+- brain/report/exporter.py
+- main.py
+- tests/test_plugin_registry.py
+- tests/test_plugin_selector.py
+- tests/test_plugin_parameter_generator.py
+- tests/test_plugin_chain_builder.py
+- tests/test_plugin_validator.py
+- tests/test_plugin_intelligence_service.py
+- tests/test_soundbrain_service_integration.py
+
+Remaining Notes
+
+- Plugin registry is a small hand-curated dataset. Larger commercial datasets are
+  future work (P2).
+- VST3/AU preset export and validation are future work (Sprint 7+).
+- Parameter generation is deterministic; ML-based parameter prediction is future
+  work (P2).
+
+---
+
+## Blockers for Sprint 7 — Memory & Learning
+
+- **User memory / profile persistence** — P2
+- **Project memory and continuous learning loop** — P2
+- **Preset export format (VST3/AU) and validation** — P2 (carry-over)
 - **Real Whisper provider / test** — P2 (carry-over)
 - **Real Qwen provider / test** — P2 (carry-over)
 - **CUDA validation** — P2 (carry-over)

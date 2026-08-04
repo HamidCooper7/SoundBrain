@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from brain.audio.plugin.models import PluginIntelligenceResult
+
 
 @dataclass
 class ReportIssue:
@@ -51,3 +53,5 @@ class SoundBrainReport:
     explanations: list[str] = field(default_factory=list)
 
     confidence_scores: dict[str, float] = field(default_factory=dict)
+
+    plugin_intelligence: PluginIntelligenceResult | None = None

@@ -82,8 +82,71 @@ class ReportExporter:
                 ],
                 "explanations": report.explanations,
             },
+            "plugin_intelligence": self._serialize_plugin_intelligence(report.plugin_intelligence),
             "recommendations": report.recommendations,
             "summary": report.ai_summary,
+        }
+
+    def _serialize_plugin_intelligence(
+        self,
+        plugin_result,
+    ) -> dict | None:
+        if plugin_result is None:
+            return None
+
+        return {
+            "goals": [
+                {
+                    "id": goal.id,
+                    "description": goal.description,
+                    "target": goal.target,
+                    "root_cause": goal.root_cause,
+                    "action": goal.action,
+                    "confidence": goal.confidence,
+                }
+                for goal in plugin_result.goals
+            ],
+            "steps": [
+                {
+                    "order": step.order,
+                    "plugin_category": step.plugin_category,
+                    "plugin_type": step.plugin_type,
+                    "suggestion": step.suggestion,
+                    "estimated_impact": step.estimated_impact,
+                    "confidence": step.confidence,
+                    "goal": {
+                        "id": step.goal.id,
+                        "description": step.goal.description,
+                        "target": step.goal.target,
+                        "action": step.goal.action,
+                    },
+                    "parameter_recommendations": [
+                        {
+                            "name": param.name,
+                            "value": param.value,
+                            "unit": param.unit,
+                            "range_min": param.range_min,
+                            "range_max": param.range_max,
+                            "confidence": param.confidence,
+                            "reason": param.reason,
+                        }
+                        for param in step.parameter_recommendations
+                    ],
+                    "plugin_options": [
+                        {
+                            "brand": option.brand,
+                            "name": option.name,
+                            "formats": option.formats,
+                            "category": option.category,
+                            "identifier": option.identifier,
+                        }
+                        for option in step.plugin_options
+                    ],
+                }
+                for step in plugin_result.steps
+            ],
+            "explanations": plugin_result.explanations,
+            "confidence_scores": plugin_result.confidence_scores,
         }
 
     def save_json(

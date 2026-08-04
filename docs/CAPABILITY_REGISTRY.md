@@ -122,7 +122,7 @@ Removed
 | Audio Intelligence | Production |
 | Reference AI | Production |
 | Mix Intelligence | Production |
-| Plugin Intelligence | Planned |
+| Plugin Intelligence | Production |
 | Memory & Learning | Planned |
 | DAW Integration | Planned |
 | CLI | Production |

@@ -235,7 +235,7 @@ registry.register(
     Capability(
         name="mix_intelligence",
         description="Sprint 5+ mix-aware engineering intelligence",
-        status=CapabilityStatus.PLANNED,
+        status=CapabilityStatus.VERIFIED,
     )
 )
 
@@ -243,7 +243,7 @@ registry.register(
     Capability(
         name="plugin_intelligence",
         description="Sprint 6+ plugin and preset recommendation",
-        status=CapabilityStatus.PLANNED,
+        status=CapabilityStatus.VERIFIED,
     )
 )
 
