@@ -630,18 +630,110 @@ Files
 
 Remaining Notes
 
-- Knowledge layer is isolated; no business logic migration occurred in this sprint.
+- Knowledge layer is isolated; no business logic migration occurred in Sprint 7.
 - Future sprints will migrate thresholds and mappings from `RuleEngine`,
   `RootCauseAnalyzer`, `PriorityEngine`, `ProcessingChainRecommender`, and
   `PluginParameterGenerator` into the Knowledge layer.
 
 ---
 
-## Blockers for Sprint 8 — Memory & Learning
+## P2 — Sprint 8 — Memory & Personalization
 
-- **User memory / profile persistence** — P2
-- **Project memory and continuous learning loop** — P2
-- **Preset export format (VST3/AU) and validation** — P2 (carry-over)
+Status: ✅ Completed
+
+Description
+
+Sprint 8 introduced an isolated Memory layer that stores user and project
+preferences. Memory never replaces Knowledge; it only overrides Knowledge values
+when an explicit preference exists, and only through `MemoryResolver`.
+
+Completed
+
+- Memory models (`brain.memory.models`) with `UserProfile`, `ProjectProfile`, and
+  `MemoryBundle`.
+- Memory loader (`brain.memory.loader`) for YAML master bundle and inline
+  dictionary loading.
+- Memory registry (`brain.memory.registry`) with lightweight validation.
+- Memory resolver (`brain.memory.resolver`) that overlays memory preferences on
+  top of an optional `KnowledgeResolver`.
+- Memory service (`brain.memory.service`) as a lazy-loading facade that can be
+  wired to a `KnowledgeService`.
+- Default empty configuration under `configs/memory/`.
+- Supported preferences: preferred loudness by platform, preferred plugin brands,
+  preferred genres, preferred processing order, preferred export targets,
+  preferred true peak, preferred dynamic range minimum, and project context.
+- Deterministic unit tests for loader, registry, resolver, and service.
+
+Files
+
+- brain/memory/models.py
+- brain/memory/loader.py
+- brain/memory/registry.py
+- brain/memory/resolver.py
+- brain/memory/service.py
+- brain/memory/__init__.py
+- configs/memory/
+- tests/test_memory_*.py
+
+Remaining Notes
+
+- Memory is optional and isolated; no business logic module consumes it yet.
+- Continuous learning / persistent storage updates are future work (Sprint 10+).
+
+---
+
+## P2 — Sprint 9 — Evaluation & Benchmark
+
+Status: ✅ Completed
+
+Description
+
+Sprint 9 introduced an isolated Evaluation layer that measures the quality and
+consistency of SoundBrain outputs without changing business logic.
+
+Completed
+
+- Evaluation models (`brain.evaluation.models`) for metrics, results, and
+  benchmark cases.
+- Evaluation metrics (`brain.evaluation.metrics`) for:
+  - analysis quality
+  - recommendation consistency
+  - confidence evaluation
+  - reference matching
+  - plugin recommendation evaluation
+  - knowledge resolution evaluation
+- Score aggregation (`brain.evaluation.scoring`) with weighted overall score and
+  pass/fail threshold.
+- Benchmark runner (`brain.evaluation.benchmark`) for multi-case evaluation.
+- Report exporter (`brain.evaluation.report`) for JSON output.
+- Evaluation service (`brain.evaluation.service`) as a facade consuming existing
+  outputs only.
+- Deterministic unit tests for metrics, scoring, benchmark, and service.
+- Example evaluation report generated at `reports/evaluation_example.json`.
+
+Files
+
+- brain/evaluation/models.py
+- brain/evaluation/metrics.py
+- brain/evaluation/scoring.py
+- brain/evaluation/benchmark.py
+- brain/evaluation/report.py
+- brain/evaluation/service.py
+- brain/evaluation/__init__.py
+- tests/test_evaluation_*.py
+- reports/evaluation_example.json
+
+Remaining Notes
+
+- Evaluation is optional and isolated; no business logic consumes it yet.
+- Future work: integration with CI pipeline, regression thresholds, and golden
+  dataset evaluation.
+
+---
+
+## Blockers for Sprint 10 — DAW Integration
+
+- **Preset export format (VST3/AU) and validation** — P2
 - **Real Whisper provider / test** — P2 (carry-over)
 - **Real Qwen provider / test** — P2 (carry-over)
 - **CUDA validation** — P2 (carry-over)

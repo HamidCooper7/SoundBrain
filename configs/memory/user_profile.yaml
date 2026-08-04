@@ -1,0 +1,10 @@
+user_profile:
+  user_id: default
+  preferred_loudness_by_platform: {}
+  preferred_true_peak_max: null
+  preferred_dynamic_range_min: null
+  preferred_plugin_brands: []
+  preferred_genres: []
+  preferred_processing_order: []
+  preferred_export_targets: []
+  notes: []

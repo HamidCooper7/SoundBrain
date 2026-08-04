@@ -19,7 +19,9 @@
   Sprint 5     ✅ Completed 100%
   Sprint 6     ✅ Completed 100%
   Sprint 7     ✅ Completed 100%
-  Sprint 8     ⏳ Waiting    0%
+  Sprint 8     ✅ Completed 100%
+  Sprint 9     ✅ Completed 100%
+  Sprint 10    ⏳ Waiting    0%
 
 ------------------------------------------------------------------------
 
@@ -159,15 +161,48 @@ Blocked By: - Sprint 6 completion
 
 ------------------------------------------------------------------------
 
-# Sprint 8 --- Memory & Learning
+# Sprint 8 --- Memory & Personalization
 
--   [ ] User memory
--   [ ] Project memory
--   [ ] Continuous learning
+-   [x] Memory models (`brain.memory.models`)
+-   [x] UserProfile and ProjectProfile dataclasses
+-   [x] Memory loader (`brain.memory.loader`)
+-   [x] Memory registry (`brain.memory.registry`)
+-   [x] Memory resolver (`brain.memory.resolver`)
+-   [x] Memory service (`brain.memory.service`)
+-   [x] Default empty configuration under `configs/memory/`
+-   [x] Memory overrides Knowledge only through `MemoryResolver`
+-   [x] Support for preferred loudness, plugin brands, genres, processing order, export targets
+-   [x] Deterministic unit tests for loader, registry, resolver, and service
+-   [x] Update Capability Registry and Technical Debt
+
+Blocked By: - Sprint 7 completion
 
 ------------------------------------------------------------------------
 
-# Sprint 9 --- DAW Integration
+# Sprint 9 --- Evaluation & Benchmark
+
+-   [x] Evaluation models (`brain.evaluation.models`)
+-   [x] Evaluation metrics (`brain.evaluation.metrics`)
+-   [x] Score aggregation (`brain.evaluation.scoring`)
+-   [x] Benchmark runner (`brain.evaluation.benchmark`)
+-   [x] Report exporter (`brain.evaluation.report`)
+-   [x] Evaluation service (`brain.evaluation.service`)
+-   [x] Analysis quality scoring
+-   [x] Recommendation consistency scoring
+-   [x] Confidence evaluation
+-   [x] Reference matching evaluation
+-   [x] Plugin recommendation evaluation
+-   [x] Knowledge resolution evaluation
+-   [x] Overall score aggregation
+-   [x] Deterministic unit tests for metrics, scoring, benchmark, and service
+-   [x] Example evaluation report generated
+-   [x] Update Capability Registry
+
+Blocked By: - Sprint 8 completion
+
+------------------------------------------------------------------------
+
+# Sprint 10 --- DAW Integration
 
 -   [ ] Ableton
 -   [ ] Cubase

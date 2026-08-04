@@ -124,7 +124,8 @@ Removed
 | Mix Intelligence | Production |
 | Plugin Intelligence | Production |
 | Knowledge Infrastructure | Implemented |
-| Memory & Learning | Planned |
+| Memory & Personalization | Implemented |
+| Evaluation & Benchmark | Implemented |
 | DAW Integration | Planned |
 | CLI | Production |
 | API | Planned |

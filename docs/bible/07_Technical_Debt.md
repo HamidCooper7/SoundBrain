@@ -287,11 +287,57 @@ Files
 
 ---
 
-## Blockers for Sprint 8 — Memory & Learning
+## Sprint 8 — Memory & Personalization
 
--   [ ] User memory / profile persistence — P2
--   [ ] Project memory and continuous learning loop — P2
--   [ ] Preset export format (VST3/AU) and validation — P2 (carry-over)
+Status: ✅ Completed
+
+Completed
+
+-   [x] Memory models (`brain.memory.models`) with `UserProfile`, `ProjectProfile`,
+        and `MemoryBundle`.
+-   [x] Memory loader, registry, resolver, and service.
+-   [x] Default empty configuration under `configs/memory/`.
+-   [x] Memory overrides Knowledge only through `MemoryResolver`.
+-   [x] Support for preferred loudness, plugin brands, genres, processing order,
+        and export targets.
+-   [x] Deterministic unit tests.
+-   [x] Memory remains optional and isolated; no business logic migration.
+
+Files
+
+-   brain/memory/
+-   configs/memory/
+-   tests/test_memory_*.py
+
+---
+
+## Sprint 9 — Evaluation & Benchmark
+
+Status: ✅ Completed
+
+Completed
+
+-   [x] Evaluation models, metrics, scoring, benchmark, report, and service.
+-   [x] Analysis quality, recommendation consistency, confidence, reference
+        matching, plugin recommendation, and knowledge resolution evaluation.
+-   [x] Weighted overall score aggregation with pass/fail threshold.
+-   [x] Multi-case benchmark runner.
+-   [x] JSON report exporter.
+-   [x] Deterministic unit tests.
+-   [x] Example evaluation report generated at `reports/evaluation_example.json`.
+-   [x] Evaluation consumes existing outputs only; no business logic changed.
+
+Files
+
+-   brain/evaluation/
+-   tests/test_evaluation_*.py
+-   reports/evaluation_example.json
+
+---
+
+## Blockers for Sprint 10 — DAW Integration
+
+-   [ ] Preset export format (VST3/AU) and validation — P2
 -   [ ] Real Whisper provider / test — P2 (carry-over)
 -   [ ] Real Qwen provider / test — P2 (carry-over)
 -   [ ] CUDA validation — P2 (carry-over)
