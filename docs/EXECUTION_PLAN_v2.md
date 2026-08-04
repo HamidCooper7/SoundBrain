@@ -27,14 +27,15 @@ repeatable acceptance test rather than a rewrite.
 | DSP analysis | Tempo, pitch, key, LUFS, dynamics, stereo, phase, spectral metrics | implemented |
 | Audio context | Rules plus semantic classifier and CLAP-backed intelligence | implemented / verify |
 | Engineering analysis | Rule engine, issues, recommendations, score and report objects | implemented |
-| Reference comparison | Metric comparator, scoring and comparison report models | implemented |
+| Reference comparison | Metric comparator, scoring and comparison report models | implemented / verify |
+| Mix intelligence | Root-cause analysis, priority engine, processing chain, explanations | implemented / verify |
 | Audio embeddings | CLAP provider, registry, factory, runtime cache | implemented / verify |
 | Audio memory/search | Vector-backed audio indexing and text/audio retrieval | implemented / verify |
 | Knowledge RAG | Loading, splitting, retrieval, reranking and public service | implemented / verify |
 | LLM reasoning | Prompt builder, parser, guards and LM Studio provider | implemented / verify |
 | Orchestration | State, planner, router, pipeline engine and selected stages | partial integration |
 | Reports/export | Structured report builder, validator and JSON/export utilities | implemented / verify |
-| Product interface | CLI, API, desktop UI and installable package | not yet defined as a supported product surface |
+| Product interface | CLI is the supported V1 surface; API and desktop UI are not yet defined | CLI implemented |
 
 ---
 
@@ -52,6 +53,7 @@ non-destructive recommendations.
 - Compare it against an optional reference track.
 - Retrieve relevant engineering knowledge with source references.
 - Generate structured, guarded reasoning.
+- Build deterministic mix intelligence (root causes, priorities, chain, explanations).
 - Export a JSON report and a human-readable report.
 - Make every recommendation traceable to measured evidence or retrieved
   knowledge.
@@ -75,6 +77,7 @@ Input request + audio + optional reference + intent
     -> context and semantic understanding
     -> optional reference comparison
     -> engineering-rule evaluation
+    -> optional mix intelligence
     -> knowledge retrieval
     -> structured LLM reasoning
     -> validation, confidence and evidence checks
@@ -82,13 +85,15 @@ Input request + audio + optional reference + intent
 ```
 
 `AudioData`, `AnalysisResult`, `AudioContext`, `EngineerResult`,
-`ComparisonResult`, `ReasoningResult` and `SoundBrainReport` should be the
-stable contracts between these stages. Providers and UI code must not leak into
-these contracts.
+`ComparisonResult`, `MixIntelligenceResult`, `ReasoningResult` and
+`SoundBrainReport` should be the stable contracts between these stages.
+Providers and UI code must not leak into these contracts.
 
 ---
 
 ## Phase 0: Establish a Reproducible Baseline
+
+**Status:** Completed
 
 **Goal:** make the current working system reproducible without changing its
 audio logic.
@@ -117,6 +122,8 @@ audio logic.
 
 ## Phase 1: Define the Supported Application Contract
 
+**Status:** Completed
+
 **Goal:** expose the existing core through one stable request/response API.
 
 ### Work
@@ -140,6 +147,8 @@ audio logic.
 ---
 
 ## Phase 2: Complete and Verify Pipeline Integration
+
+**Status:** Completed
 
 **Goal:** ensure the orchestration state represents the real workflow and no
 planned work is silently lost.
@@ -171,6 +180,8 @@ planned work is silently lost.
 
 ## Phase 3: Make Reasoning Auditable
 
+**Status:** Completed
+
 **Goal:** enforce the project principle: observation -> evidence -> reasoning
 -> confidence -> recommendation.
 
@@ -196,19 +207,26 @@ planned work is silently lost.
 
 ## Phase 4: Reference Intelligence and Mix Intelligence
 
-**Goal:** promote comparison from raw deltas to intent-aware guidance.
+**Status:** Completed
+
+**Goal:** promote comparison from raw deltas to intent-aware guidance and add
+rule-based mix intelligence to the V1 report.
 
 ### Work
 
 1. Capture reference intent: genre, playback target, loudness goal and desired
    relationship to the source.
 2. Segment comparisons by meaningful time windows rather than relying only on
-   one global average.
+   one global average (thin V1 implementation).
 3. Categorize differences as likely technical issue, deliberate stylistic
    difference or insufficient evidence.
 4. Weight comparison metrics using context and psychoacoustic relevance.
 5. Build reference-specific prompts from structured comparison evidence.
 6. Create a curated reference evaluation set with expected conclusions.
+7. Add root-cause detection, priority engine, processing chain recommendation
+   and deterministic explanation generation to the V1 report.
+8. Surface mix intelligence through `SoundBrainService`, `main.py` and the JSON
+   report schema.
 
 ### Acceptance Criteria
 
@@ -216,10 +234,14 @@ planned work is silently lost.
 - A reference report clearly separates similarities, differences and suggested
   experiments.
 - Results are comparable across a fixed evaluation set.
+- Mix intelligence is deterministic, tested and degrades gracefully when the
+  analysis is inconclusive.
 
 ---
 
 ## Phase 5: Quality, Evaluation and Release Readiness
+
+**Status:** Next
 
 **Goal:** turn local success into a maintainable release candidate.
 
@@ -256,6 +278,8 @@ planned work is silently lost.
 
 ## Phase 6: Product Surface
 
+**Status:** Planned
+
 **Goal:** make V1 usable by an audio engineer.
 
 ### Recommended Order
@@ -288,19 +312,16 @@ planned work is silently lost.
 
 ### Now
 
-1. Choose the single supported V1 entry point and define its request/result
-   contracts.
-2. Create the composition root and configuration model.
-3. Verify the currently working pipeline as an explicit end-to-end smoke path.
-4. Connect or explicitly defer every orchestrated route.
-5. Add baseline packaging and deterministic tests.
+1. Phase 5 quality gates and release readiness.
+2. Evaluation dataset for reference and mix intelligence recommendations.
+3. Report schema versioning and backward-compatible migrations.
+4. Baseline packaging and deterministic CI.
 
 ### Next
 
-1. Structured, evidence-linked reasoning output.
-2. Intent-aware reference workflow.
-3. CLI and JSON report schema.
-4. Evaluation dataset and quality gates.
+1. Plugin intelligence and actionable parameter recommendations.
+2. Structured, evidence-linked reasoning output.
+3. API and asynchronous job/progress model.
 
 ### Later
 

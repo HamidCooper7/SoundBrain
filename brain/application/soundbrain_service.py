@@ -9,6 +9,11 @@ from brain.audio.analysis.models import AnalysisResult
 from brain.audio.context.models import AudioContext
 from brain.audio.engineer.models import EngineerResult
 from brain.audio.io.models import AudioData
+from brain.audio.mix.chains import ProcessingChainRecommender
+from brain.audio.mix.explanation import ExplanationBuilder
+from brain.audio.mix.models import MixIntelligenceResult
+from brain.audio.mix.priority import PriorityEngine
+from brain.audio.mix.root_cause import RootCauseAnalyzer
 from brain.reference.models import ReferenceComparison, ReferenceIntent
 from brain.report.models import SoundBrainReport
 
@@ -21,8 +26,9 @@ class AnalysisRequest:
     V1 SoundBrain analysis request.
 
     The deterministic audio review flow is always executed. Optional features
-    (reference comparison, LLM reasoning, RAG retrieval, CLAP semantic analysis)
-    are flag-gated and gracefully degrade when disabled or unavailable.
+    (reference comparison, LLM reasoning, RAG retrieval, CLAP semantic analysis,
+    mix intelligence) are flag-gated and gracefully degrade when disabled or
+    unavailable.
     """
 
     audio_path: str | Path
@@ -37,6 +43,7 @@ class AnalysisRequest:
     include_reasoning: bool = False
     include_rag: bool = False
     include_semantic_analysis: bool = False
+    include_mix_intelligence: bool = False
     output_path: str | Path | None = None
 
 
@@ -46,7 +53,7 @@ class AnalysisResponse:
     V1 SoundBrain analysis response.
 
     Contains the full deterministic pipeline output plus any optional results
-    that were successfully produced (e.g. reference comparison).
+    that were successfully produced (e.g. reference comparison, mix intelligence).
     """
 
     audio: AudioData
@@ -55,6 +62,7 @@ class AnalysisResponse:
     engineering: EngineerResult
     report: SoundBrainReport
     comparison: ReferenceComparison | None = None
+    mix_intelligence: MixIntelligenceResult | None = None
 
 
 class SoundBrainService:
@@ -112,19 +120,29 @@ class SoundBrainService:
             )
 
         report = review_result.report
+        mix_result: MixIntelligenceResult | None = None
+        if request.include_mix_intelligence:
+            mix_result = self._run_mix_intelligence(review_result)
+            if mix_result is not None:
+                report = self._enrich_report_with_mix(report, mix_result)
+
         if request.include_reasoning:
             reference_summary = ""
             if comparison is not None:
                 reference_summary = self._format_reference_summary(comparison)
+            mix_summary = ""
+            if mix_result is not None:
+                mix_summary = self._format_mix_summary(mix_result)
             reasoning_answer = self._run_reasoning(
                 review_result=review_result,
                 rag_context=rag_context,
                 reference_summary=reference_summary,
+                mix_summary=mix_summary,
                 request=request,
             )
             if reasoning_answer:
                 report = self._rebuild_report_with_reasoning(
-                    review_result=review_result,
+                    report=report,
                     ai_answer=reasoning_answer,
                 )
 
@@ -140,6 +158,7 @@ class SoundBrainService:
             engineering=review_result.engineering,
             report=report,
             comparison=comparison,
+            mix_intelligence=mix_result,
         )
 
     def _run_reference_comparison(
@@ -274,6 +293,7 @@ class SoundBrainService:
         review_result: Any,
         rag_context: str,
         reference_summary: str,
+        mix_summary: str = "",
         request: AnalysisRequest,
     ) -> str:
         """
@@ -296,6 +316,8 @@ class SoundBrainService:
         question_parts = [request.intent, request.delivery_target]
         if reference_summary:
             question_parts.append(reference_summary)
+        if mix_summary:
+            question_parts.append(mix_summary)
         if rag_context:
             question_parts.append(rag_context)
         question = "\n\n".join(part for part in question_parts if part).strip()
@@ -329,21 +351,106 @@ class SoundBrainService:
     def _rebuild_report_with_reasoning(
         self,
         *,
-        review_result: Any,
+        report: SoundBrainReport,
         ai_answer: str,
     ) -> SoundBrainReport:
         """
-        Rebuild the deterministic report with the LLM-generated summary.
+        Rebuild the report with the LLM-generated summary.
 
-        All deterministic fields are preserved; only ``ai_summary`` is updated.
+        All deterministic fields — including optional mix intelligence — are
+        preserved; only ``ai_summary`` is updated.
         """
-        from brain.report import ReportBuilder
+        return replace(report, ai_summary=ai_answer)
 
-        rebuilt = ReportBuilder().build(
-            analysis=review_result.analysis,
-            engineer=review_result.engineering,
-            audio_context=review_result.context,
-            ai_answer=ai_answer,
+    def _run_mix_intelligence(
+        self,
+        review_result: Any,
+    ) -> MixIntelligenceResult | None:
+        """
+        Run deterministic mix intelligence over the deterministic results.
+
+        Returns ``None`` if the heuristic analysis fails, so the deterministic
+        report is still delivered.
+        """
+        try:
+            root_causes = RootCauseAnalyzer().analyze(
+                review_result.analysis,
+                review_result.context,
+                review_result.engineering,
+            )
+            prioritized = PriorityEngine().prioritize(
+                review_result.engineering,
+                root_causes,
+            )
+            chain = ProcessingChainRecommender().recommend(
+                root_causes,
+                prioritized,
+                review_result.context,
+            )
+            explanations = ExplanationBuilder().build(
+                review_result.analysis,
+                review_result.context,
+                review_result.engineering,
+                root_causes.causes,
+                chain,
+            )
+
+            return MixIntelligenceResult(
+                root_causes=root_causes.causes,
+                prioritized_issues=prioritized,
+                processing_chain=chain,
+                explanations=explanations,
+                confidence_scores=root_causes.confidence_scores,
+            )
+        except Exception as exc:
+            logger.warning(
+                "Mix intelligence failed: %s",
+                exc,
+                exc_info=logger.isEnabledFor(logging.DEBUG),
+            )
+            return None
+
+    def _enrich_report_with_mix(
+        self,
+        report: SoundBrainReport,
+        mix_result: MixIntelligenceResult,
+    ) -> SoundBrainReport:
+        """Attach deterministic mix intelligence fields to the report."""
+        return replace(
+            report,
+            root_causes=mix_result.root_causes,
+            prioritized_issues=mix_result.prioritized_issues,
+            processing_chain=mix_result.processing_chain,
+            explanations=mix_result.explanations,
+            confidence_scores=mix_result.confidence_scores,
         )
 
-        return replace(review_result.report, ai_summary=rebuilt.ai_summary)
+    def _format_mix_summary(
+        self,
+        mix_result: MixIntelligenceResult,
+    ) -> str:
+        """Format a short mix intelligence summary for reasoning context."""
+        parts = ["Mix intelligence summary:"]
+
+        if mix_result.prioritized_issues:
+            parts.append("  Prioritized issues:")
+            for issue in mix_result.prioritized_issues[:5]:
+                parts.append(
+                    f"    - {issue.user_action_order}. {issue.title} "
+                    f"({issue.severity}, score={issue.priority_score:.2f})"
+                )
+
+        if mix_result.root_causes:
+            parts.append("  Root causes:")
+            for cause in mix_result.root_causes[:5]:
+                parts.append(f"    - {cause.symptom}: {', '.join(cause.likely_causes)}")
+
+        if mix_result.processing_chain:
+            parts.append("  Suggested processing chain:")
+            for step in mix_result.processing_chain[:5]:
+                parts.append(
+                    f"    - Step {step.order}: {step.plugin_type} on {step.target} "
+                    f"({step.estimated_impact} impact)"
+                )
+
+        return "\n".join(parts)

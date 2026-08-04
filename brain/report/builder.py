@@ -61,6 +61,8 @@ class ReportBuilder:
 
                     recommendation=issue.recommendation,
 
+                    confidence=issue.confidence,
+
                 )
 
             )

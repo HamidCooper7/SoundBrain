@@ -61,6 +61,7 @@ def _cmd_analyze(args: argparse.Namespace) -> int:
         include_reasoning=args.reasoning,
         include_rag=args.rag,
         include_semantic_analysis=args.semantic,
+        include_mix_intelligence=args.mix_intelligence,
         output_path=args.output,
     )
 
@@ -151,6 +152,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--rag",
         action="store_true",
         help="Include RAG retrieval for knowledge-backed reasoning (requires Chroma data).",
+    )
+    analyze_parser.add_argument(
+        "--mix-intelligence",
+        action="store_true",
+        help="Include deterministic mix intelligence (root causes, priority chain, explanations).",
     )
     analyze_parser.add_argument(
         "--intent",

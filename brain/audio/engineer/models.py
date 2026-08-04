@@ -14,6 +14,8 @@ class Issue:
 
     recommendation: str
 
+    confidence: float = 0.85
+
 
 @dataclass(slots=True)
 class Recommendation:
@@ -23,6 +25,8 @@ class Recommendation:
     reason: str
 
     action: str
+
+    confidence: float = 0.85
 
 
 @dataclass(slots=True)
@@ -35,3 +39,5 @@ class EngineerResult:
     issues: list[Issue] = field(default_factory=list)
 
     recommendations: list[Recommendation] = field(default_factory=list)
+
+    confidence_scores: dict[str, float] = field(default_factory=dict)

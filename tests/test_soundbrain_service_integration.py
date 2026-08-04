@@ -9,7 +9,6 @@ from brain.application.soundbrain_service import (
     SoundBrainService,
 )
 
-
 AUDIO_PATH = Path("tests/audio.wav")
 
 
@@ -62,3 +61,29 @@ def test_soundbrain_service_integration_with_reference():
     response = service.analyze(request)
 
     assert response.comparison is not None
+
+
+@pytest.mark.skipif(
+    not AUDIO_PATH.exists(),
+    reason="No test audio file is available",
+)
+def test_soundbrain_service_integration_with_mix_intelligence():
+    """Deterministic flow with mix intelligence enabled."""
+    request = AnalysisRequest(
+        audio_path=AUDIO_PATH,
+        include_mix_intelligence=True,
+    )
+
+    service = SoundBrainService()
+    response = service.analyze(request)
+
+    assert response.mix_intelligence is not None
+    report = response.report
+    assert report.root_causes
+    assert report.prioritized_issues
+    assert report.processing_chain
+    assert report.explanations
+    assert report.confidence_scores
+
+    # Reasoning is disabled, so ai_summary should be the validated intent text or empty.
+    assert report.ai_summary == "" or "integration" not in report.ai_summary.lower()

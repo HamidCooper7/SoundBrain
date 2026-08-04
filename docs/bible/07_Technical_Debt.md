@@ -216,13 +216,57 @@ Remaining Notes
 - ReferenceAI uses rule-based reasoning; LLM-backed reference reasoning is future
   work (P2).
 
-## Blockers for Sprint 5 — Mix Intelligence
+## P2 — Sprint 5 — Mix Intelligence
 
--   [ ] Real Whisper provider / test — P2
--   [ ] Real Qwen provider / test — P2
--   [ ] Full per-window segment analysis — P2
--   [ ] LLM-backed reference reasoning — P2
--   [ ] CUDA validation — P2
+Status: ✅ Completed
+
+Completed
+
+-   [x] Root cause detection, priority engine, processing chain and explanations.
+-   [x] Confidence scoring across issues, root causes, and recommendations.
+-   [x] Integration into `SoundBrainService` and `main.py`.
+-   [x] Tests and CLI validation.
+
+Files
+
+-   brain/audio/mix/
+-   brain/audio/engineer/models.py
+-   brain/application/soundbrain_service.py
+-   brain/report/models.py
+-   brain/report/builder.py
+-   brain/report/exporter.py
+-   main.py
+-   tests/test_root_cause.py
+-   tests/test_priority_engine.py
+-   tests/test_processing_chain.py
+-   tests/test_mix_explanation.py
+
+---
+
+## Blockers for Sprint 6 — Plugin Intelligence
+
+-   [ ] Commercial plugin recommendation dataset — P2
+-   [ ] Parameter generation for processing chain — P2
+-   [ ] Preset export format (VST3/AU) and validation — P2
+-   [ ] Real Whisper provider / test — P2 (carry-over)
+-   [ ] Real Qwen provider / test — P2 (carry-over)
+-   [ ] CUDA validation — P2 (carry-over)
+
+---
+
+## Environment Note — Pytest Temporary Directory on Windows
+
+pytest defaults to `C:\Users\<user>\AppData\Local\Temp\pytest-of-<user>`, which
+can raise `PermissionError` on Windows when existing directories are protected.
+`pytest.ini` now sets `--basetemp=tmp` so temporary directories are created under
+the repository root, making reference pipeline tests reproducible on Windows.
+
+Files
+
+-   pytest.ini
+-   tmp/
+
+---
 
 ## Environment Note — PyArrow Faulthandler Noise on Windows
 

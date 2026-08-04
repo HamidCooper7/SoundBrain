@@ -233,16 +233,49 @@ Remaining Notes
 
 ## Mix Intelligence
 
-Status: Planned
+Status: ✅ Completed
 
-Tasks
+Description
 
-- Frequency Balance
-- Dynamic Balance
-- Stereo Analysis
-- Tonal Balance
-- Loudness Strategy
-- Human Engineering Suggestions
+Deterministic mix intelligence now generates root causes, prioritized issues,
+a non-destructive processing chain and human-readable explanations for every
+V1 analysis.
+
+Completed
+
+- Created `brain.audio.mix` package with `RootCauseAnalyzer`, `PriorityEngine`,
+  `ProcessingChainRecommender` and `ExplanationBuilder`.
+- Added confidence scoring to `EngineerIssue`, `Recommendation`, `RootCause`,
+  `PrioritizedIssue` and `ProcessingStep`.
+- Extended `SoundBrainReport` and `AnalysisResponse` with mix intelligence fields.
+- Wired `include_mix_intelligence` through `SoundBrainService.analyze`.
+- Added `--mix-intelligence` flag to `main.py`.
+- Added unit tests and integration test coverage.
+
+Files
+
+- brain/audio/mix/root_cause.py (new)
+- brain/audio/mix/priority.py (new)
+- brain/audio/mix/chains.py (new)
+- brain/audio/mix/explanation.py (new)
+- brain/audio/mix/models.py (new)
+- brain/audio/mix/__init__.py (new)
+- brain/audio/engineer/models.py
+- brain/report/models.py
+- brain/application/soundbrain_service.py
+- main.py
+- tests/test_root_cause.py (new)
+- tests/test_priority_engine.py (new)
+- tests/test_processing_chain.py (new)
+- tests/test_mix_explanation.py (new)
+- tests/test_soundbrain_service_integration.py
+
+Remaining Notes
+
+- Mix intelligence is deterministic and rule-based. LLM-enriched mix reasoning is
+  future work (P2).
+- Processing chain suggestions are high-level plugin types only; commercial
+  plugin recommendations and parameter generation are future work (Sprint 6).
 
 ---
 
@@ -479,13 +512,75 @@ Files
 
 ---
 
-## Blockers for Sprint 5 — Mix Intelligence
+## P2 — Sprint 5 — Mix Intelligence
 
-- **Real Whisper provider / test** — P2
-- **Real Qwen provider / test** — P2
-- **Full per-window segment analysis** — P2 (currently thin implementation)
-- **LLM-backed reference reasoning** — P2 (currently rule-based)
-- **CUDA validation** — P2 (only CPU tested)
+Status: ✅ Completed
+
+Description
+
+Sprint 5 delivered deterministic mix intelligence as an optional, flag-gated
+stage in the V1 workflow.
+
+Completed
+
+- Root cause detection, priority engine, processing chain and explanations.
+- Confidence scoring across issues, root causes, and recommendations.
+- Integration into `SoundBrainService` and `main.py`.
+- Tests and CLI validation.
+
+Files
+
+- brain/audio/mix/
+- brain/audio/engineer/models.py
+- brain/application/soundbrain_service.py
+- brain/report/models.py
+- brain/report/builder.py
+- brain/report/exporter.py
+- main.py
+- tests/test_root_cause.py
+- tests/test_priority_engine.py
+- tests/test_processing_chain.py
+- tests/test_mix_explanation.py
+
+---
+
+## Blockers for Sprint 6 — Plugin Intelligence
+
+- **Commercial plugin recommendation dataset** — P2
+- **Parameter generation for processing chain** — P2
+- **Preset export format (VST3/AU) and validation** — P2
+- **Real Whisper provider / test** — P2 (carry-over)
+- **Real Qwen provider / test** — P2 (carry-over)
+- **CUDA validation** — P2 (carry-over)
+
+---
+
+## Environment Note — Pytest Temporary Directory on Windows
+
+pytest defaults to `C:\Users\<user>\AppData\Local\Temp\pytest-of-<user>`, which
+can raise `PermissionError` on Windows when existing directories are protected.
+`pytest.ini` now sets `--basetemp=tmp` so temporary directories are created under
+the repository root, making reference pipeline tests reproducible on Windows.
+
+Files
+
+- pytest.ini
+- tmp/ (created by pytest, ignored by Git)
+
+---
+
+## Environment Note — PyArrow Faulthandler Noise on Windows
+
+When pytest's faulthandler plugin is active, importing `pyarrow` (via
+`pandas` → `sklearn` → `transformers`) prints a non-fatal
+`Windows fatal exception: access violation` traceback during test collection.
+All tests still pass and the process continues. Running with
+`-p no:faulthandler` suppresses the noise. This is a Windows/pyarrow wheel
+quirk, not a SoundBrain bug.
+
+Files
+
+- N/A (environment)
 
 ---
 
