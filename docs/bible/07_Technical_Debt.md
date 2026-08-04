@@ -267,7 +267,27 @@ Files
 
 ---
 
-## Blockers for Sprint 7 — Memory & Learning
+## Sprint 7 — Knowledge Infrastructure
+
+Status: ✅ Completed
+
+Completed
+
+-   [x] Knowledge models (`brain.knowledge.models`).
+-   [x] Knowledge loader, validator, registry, resolver, and service.
+-   [x] Default configuration structure under `configs/knowledge/`.
+-   [x] Deterministic unit tests for loader, validator, registry, resolver, and service.
+-   [x] Knowledge layer remains optional and isolated; no business logic migration.
+
+Files
+
+-   brain/knowledge/
+-   configs/knowledge/
+-   tests/test_knowledge_*.py
+
+---
+
+## Blockers for Sprint 8 — Memory & Learning
 
 -   [ ] User memory / profile persistence — P2
 -   [ ] Project memory and continuous learning loop — P2

@@ -2,7 +2,7 @@
 
 Version: 0.1.0
 
-Last Updated: 2026-07-31
+Last Updated: 2026-08-04
 
 ---
 
@@ -587,13 +587,57 @@ Remaining Notes
 
 - Plugin registry is a small hand-curated dataset. Larger commercial datasets are
   future work (P2).
-- VST3/AU preset export and validation are future work (Sprint 7+).
+- VST3/AU preset export and validation are future work (Sprint 8+).
 - Parameter generation is deterministic; ML-based parameter prediction is future
   work (P2).
 
 ---
 
-## Blockers for Sprint 7 — Memory & Learning
+## P2 — Sprint 7 — Knowledge Infrastructure
+
+Status: ✅ Completed
+
+Description
+
+Sprint 7 introduced the Knowledge Infrastructure layer as a standalone,
+optional, read-only data layer. No existing business logic modules were
+migrated; this sprint delivered only the models, loader, validator, registry,
+resolver, service, and default configuration files.
+
+Completed
+
+- Knowledge models (`brain.knowledge.models`) for engineering rules, genre/platform
+  profiles, plugin capabilities, root causes, and best practices.
+- Knowledge loader (`brain.knowledge.loader`) for YAML master bundle and inline
+  dictionary loading.
+- Knowledge validator (`brain.knowledge.validator`) for required keys, version
+  checks, and range validation.
+- Knowledge registry (`brain.knowledge.registry`) composing loader and validator.
+- Knowledge resolver (`brain.knowledge.resolver`) providing defensive query helpers.
+- Knowledge service (`brain.knowledge.service`) as lazy-loading facade.
+- Default configuration under `configs/knowledge/`.
+- Deterministic unit tests for loader, validator, registry, resolver, and service.
+
+Files
+
+- brain/knowledge/
+- configs/knowledge/
+- tests/test_knowledge_loader.py
+- tests/test_knowledge_validator.py
+- tests/test_knowledge_registry.py
+- tests/test_knowledge_resolver.py
+- tests/test_knowledge_service.py
+
+Remaining Notes
+
+- Knowledge layer is isolated; no business logic migration occurred in this sprint.
+- Future sprints will migrate thresholds and mappings from `RuleEngine`,
+  `RootCauseAnalyzer`, `PriorityEngine`, `ProcessingChainRecommender`, and
+  `PluginParameterGenerator` into the Knowledge layer.
+
+---
+
+## Blockers for Sprint 8 — Memory & Learning
 
 - **User memory / profile persistence** — P2
 - **Project memory and continuous learning loop** — P2

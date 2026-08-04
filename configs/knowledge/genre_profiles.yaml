@@ -1,0 +1,61 @@
+genre_profiles:
+  pop:
+    name: pop
+    description: Bright, competitive, loud mixes with wide stereo image.
+    expected_spectral_centroid_range: [2000.0, 6000.0]
+    expected_dynamic_range_min: 6.0
+    typical_stereo_width_min: 0.15
+    target_loudness_by_platform:
+      streaming: -9.0
+      club: -8.0
+      radio: -10.0
+    common_issues: [harsh high end, over-compression, narrow stereo image]
+    common_chain: [eq, compressor, imager, limiter]
+
+  hiphop:
+    name: hip-hop
+    description: Low-end focused mixes with punchy dynamics.
+    expected_spectral_centroid_range: [800.0, 2500.0]
+    expected_dynamic_range_min: 7.0
+    typical_stereo_width_min: 0.12
+    target_loudness_by_platform:
+      streaming: -9.0
+      club: -7.0
+    common_issues: [boomy low end, muddy mids, inconsistent dynamics]
+    common_chain: [eq, compressor, transient_shaper, limiter]
+
+  jazz:
+    name: jazz
+    description: Natural, dynamic, wide mixes with minimal processing.
+    expected_spectral_centroid_range: [1200.0, 4000.0]
+    expected_dynamic_range_min: 10.0
+    typical_stereo_width_min: 0.20
+    target_loudness_by_platform:
+      streaming: -14.0
+      vinyl: -12.0
+    common_issues: [excessive limiting, loss of dynamics, phase issues]
+    common_chain: [eq, compressor]
+
+  electronic:
+    name: electronic
+    description: Synthesizer-heavy mixes with precise low end and stereo effects.
+    expected_spectral_centroid_range: [1500.0, 5000.0]
+    expected_dynamic_range_min: 6.0
+    typical_stereo_width_min: 0.18
+    target_loudness_by_platform:
+      streaming: -10.0
+      club: -7.0
+    common_issues: [harsh highs, over-compression, mono compatibility]
+    common_chain: [eq, compressor, imager, saturation, limiter]
+
+  rock:
+    name: rock
+    description: Guitar-driven mixes with punch and midrange presence.
+    expected_spectral_centroid_range: [1500.0, 4500.0]
+    expected_dynamic_range_min: 8.0
+    typical_stereo_width_min: 0.18
+    target_loudness_by_platform:
+      streaming: -11.0
+      club: -9.0
+    common_issues: [harsh guitars, muddy low mids, dynamic inconsistency]
+    common_chain: [eq, compressor, transient_shaper, limiter]

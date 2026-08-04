@@ -1,0 +1,28 @@
+engineering_rules:
+  mix:
+    lufs_range: [-14.5, -9.0]
+    dynamic_range_min: 8.0
+    peak_max: 1.0
+    phase_high_threshold: 0.7
+    phase_low_threshold: 0.3
+    stereo_width_min: 0.10
+
+  stem:
+    dynamic_range_min: 8.0
+    peak_max: 1.0
+
+  severity_weights:
+    critical: 1.0
+    high: 0.75
+    medium: 0.5
+    low: 0.25
+    info: 0.1
+
+  category_order:
+    fix first: 1.0
+    fine tune: 0.6
+    optional: 0.3
+
+  confidence_defaults:
+    rule_based: 0.85
+    measurement: 0.90

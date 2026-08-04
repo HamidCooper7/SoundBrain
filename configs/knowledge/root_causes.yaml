@@ -1,0 +1,49 @@
+root_causes:
+  mappings:
+    - symptom_keywords: [harsh, high, brightness, sibilance]
+      likely_causes:
+        - excessive 2–5 kHz energy
+        - aggressive EQ or saturation on vocals/instruments
+      priority: medium
+      confidence: 0.82
+      required_measurements: [spectral_centroid]
+
+    - symptom_keywords: [dynamic, compression, flat, punch]
+      likely_causes:
+        - over-compression on the mix bus or individual tracks
+        - excessive limiting
+      priority: high
+      confidence: 0.85
+      required_measurements: [dynamic_range, lufs]
+
+    - symptom_keywords: [loudness, lufs, quiet, limit]
+      likely_causes:
+        - insufficient limiting
+        - conservative gain staging
+      priority: high
+      confidence: 0.80
+      required_measurements: [lufs]
+
+    - symptom_keywords: [stereo, phase, mono, width]
+      likely_causes:
+        - overly narrow panning
+        - phase cancellation between tracks
+      priority: medium
+      confidence: 0.78
+      required_measurements: [stereo_width, phase]
+
+    - symptom_keywords: [transient, attack, smack, dull]
+      likely_causes:
+        - over-compression smearing transients
+        - excessive saturation or limiting
+      priority: medium
+      confidence: 0.75
+      required_measurements: [onset_count, dynamic_range]
+
+    - symptom_keywords: [warmth, saturation, harmonic]
+      likely_causes:
+        - missing harmonic content in digital sources
+        - excessive high-pass filtering
+      priority: low
+      confidence: 0.70
+      required_measurements: [spectral_centroid]

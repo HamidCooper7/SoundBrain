@@ -18,7 +18,7 @@
   Sprint 4     ✅ Completed 100%
   Sprint 5     ✅ Completed 100%
   Sprint 6     ✅ Completed 100%
-  Sprint 7     ⏳ Waiting    0%
+  Sprint 7     ✅ Completed 100%
   Sprint 8     ⏳ Waiting    0%
 
 ------------------------------------------------------------------------
@@ -143,7 +143,23 @@ Blocked By: - Sprint 5 completion
 
 ------------------------------------------------------------------------
 
-# Sprint 7 --- Memory & Learning
+# Sprint 7 --- Knowledge Infrastructure
+
+-   [x] Knowledge models (`brain.knowledge.models`)
+-   [x] Knowledge loader (`brain.knowledge.loader`)
+-   [x] Knowledge validator (`brain.knowledge.validator`)
+-   [x] Knowledge registry (`brain.knowledge.registry`)
+-   [x] Knowledge resolver (`brain.knowledge.resolver`)
+-   [x] Knowledge service (`brain.knowledge.service`)
+-   [x] Default configuration structure under `configs/knowledge/`
+-   [x] Deterministic unit tests for loader, validator, registry, resolver, and service
+-   [x] Update Capability Registry and Technical Debt
+
+Blocked By: - Sprint 6 completion
+
+------------------------------------------------------------------------
+
+# Sprint 8 --- Memory & Learning
 
 -   [ ] User memory
 -   [ ] Project memory
@@ -151,7 +167,7 @@ Blocked By: - Sprint 5 completion
 
 ------------------------------------------------------------------------
 
-# Sprint 8 --- DAW Integration
+# Sprint 9 --- DAW Integration
 
 -   [ ] Ableton
 -   [ ] Cubase

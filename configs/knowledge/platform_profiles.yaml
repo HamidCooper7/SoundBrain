@@ -1,0 +1,53 @@
+platform_profiles:
+  streaming:
+    name: streaming
+    target_lufs: -14.0
+    true_peak_max: -1.0
+    format_requirements: ["44.1 kHz", "16-bit", " stereo"]
+    loudness_standard: "ITU-R BS.1770-4"
+    recommended_dynamic_range_min: 8.0
+    notes:
+      - "Spotify, Apple Music, YouTube, Tidal normalization target."
+      - "True peak should not exceed -1 dBTP."
+
+  club:
+    name: club
+    target_lufs: -8.0
+    true_peak_max: -1.0
+    format_requirements: ["48 kHz", "24-bit", "stereo"]
+    loudness_standard: "None"
+    recommended_dynamic_range_min: 6.0
+    notes:
+      - "Loudness-competitive target for live sound systems."
+      - "Dynamic range can be lower than streaming."
+
+  vinyl:
+    name: vinyl
+    target_lufs: -12.0
+    true_peak_max: -1.0
+    format_requirements: ["44.1 kHz", "24-bit", "stereo"]
+    loudness_standard: "None"
+    recommended_dynamic_range_min: 10.0
+    notes:
+      - "Lower bass and stereo information below 200 Hz for cutting."
+      - "Higher dynamic range is preferred for vinyl pressings."
+
+  radio:
+    name: radio
+    target_lufs: -13.0
+    true_peak_max: -1.0
+    format_requirements: ["44.1 kHz", "16-bit", "stereo"]
+    loudness_standard: "EBU R128"
+    recommended_dynamic_range_min: 7.0
+    notes:
+      - "Broadcast loudness standard with limited true peak."
+
+  film:
+    name: film
+    target_lufs: -24.0
+    true_peak_max: -1.0
+    format_requirements: ["48 kHz", "24-bit", "surround or stereo"]
+    loudness_standard: "ATSC A/85"
+    recommended_dynamic_range_min: 12.0
+    notes:
+      - "Dialogue-centered loudness target for film/TV delivery."
