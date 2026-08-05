@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "soundbrain"
-version = "0.3.0"
+version = "1.0.0"
 description = "AI-powered modular audio intelligence platform."
 readme = "docs/README_v2.md"
 requires-python = ">=3.12"

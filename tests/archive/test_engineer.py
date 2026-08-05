@@ -1,8 +1,25 @@
-from brain.pipeline import analyze_audio
-from brain.analysis.engineer import engineer_report
+from brain.audio.analysis import AudioAnalyzer
+from brain.audio.engineer import (
+    AudioEngineer,
+    EngineerReport,
+)
+from brain.audio.io import AudioIOService
 
-results = analyze_audio("tests/audio.wav")
 
-report = engineer_report(results)
+audio = AudioIOService().load(
+    "music/test.wav"
+)
 
-print(report)
+analysis = AudioAnalyzer().analyze(
+    audio
+)
+
+engineer = AudioEngineer().analyze(
+    analysis
+)
+
+print(
+    EngineerReport().build(
+        engineer
+    )
+)
