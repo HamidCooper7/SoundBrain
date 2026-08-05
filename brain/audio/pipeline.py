@@ -5,7 +5,6 @@ from pathlib import Path
 from brain.audio.embeddings.bootstrap import create_embedding_registry
 from brain.audio.embeddings.encoder import AudioEncoder
 from brain.audio.embeddings.factory import EmbeddingFactory
-from brain.audio.embeddings.manager import EmbeddingManager
 from brain.audio.embeddings.tasks import EmbeddingTask
 
 from brain.audio.io import AudioIOService
@@ -24,9 +23,9 @@ class AudioPipeline:
 
         factory = EmbeddingFactory(registry)
 
-        manager = EmbeddingManager(factory)
-
-        self.encoder = AudioEncoder(manager)
+        self.encoder = AudioEncoder(
+            factory=factory,
+        )
 
         self.memory = AudioMemory()
 

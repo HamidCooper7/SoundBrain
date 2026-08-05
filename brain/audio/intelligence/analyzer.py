@@ -19,6 +19,13 @@ from .models import (
 
 
 class AudioIntelligenceAnalyzer:
+    """
+    Analyzer that uses the legacy CLAP audio embedding provider.
+
+    The canonical audio embedding provider is ``brain.audio.embeddings.clap.CLAPEmbedding``.
+    This analyzer is kept functional for existing callers but is a candidate
+    for migration to the canonical provider registry.
+    """
 
 
     def __init__(

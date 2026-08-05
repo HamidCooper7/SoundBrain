@@ -1,27 +1,25 @@
 from __future__ import annotations
 
-import torch
-from sentence_transformers import SentenceTransformer
-
 from brain.infrastructure.config import settings
+from brain.runtime import ModelRuntime
 
 
-DEVICE = (
-    "cuda"
-    if torch.cuda.is_available()
-    else "cpu"
-)
+def get_embedding_model():
+    """
+    Lazily load the configured sentence-transformer embedding model.
 
-print(f"Embedding Device: {DEVICE}")
+    ``sentence_transformers`` is imported inside the function so that importing
+    ``brain.embedding`` does not pull heavy dependencies at module level.
+    """
+    from sentence_transformers import SentenceTransformer
+
+    assets = ModelRuntime.shared().load(
+        model_name=str(settings.embedding.model_path),
+        model_cls=SentenceTransformer,
+        backend="sentence-transformers",
+        trust_remote_code=settings.models.text_embedding.trust_remote_code,
+    )
+    return assets.model
 
 
-_embedding_model = SentenceTransformer(
-    str(settings.embedding.model_path),
-    trust_remote_code=True,
-    device=DEVICE,
-)
-
-
-def get_embedding_model() -> SentenceTransformer:
-
-    return _embedding_model
+__all__ = ["get_embedding_model"]

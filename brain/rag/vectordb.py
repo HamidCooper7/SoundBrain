@@ -3,7 +3,6 @@ from __future__ import annotations
 from chromadb import PersistentClient
 from chromadb.api.types import EmbeddingFunction
 
-from brain.embedding import get_embedding_model
 from brain.infrastructure.config import settings
 
 
@@ -18,9 +17,14 @@ class QwenEmbeddingFunction(
     EmbeddingFunction
 ):
 
-    def __init__(self):
+    @property
+    def model(self):
+        # Lazy import to avoid a Windows segfault when sentence_transformers
+        # is loaded at module import time alongside chromadb's
+        # EmbeddingFunction Protocol.
+        from brain.embedding import get_embedding_model
 
-        self.model = get_embedding_model()
+        return get_embedding_model()
 
     def __call__(
         self,
@@ -54,3 +58,8 @@ collection = (
         embedding_function=embedding_function,
     )
 )
+
+
+def get_collection():
+    """Return the shared Chroma collection."""
+    return collection

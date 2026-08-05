@@ -1,0 +1,7 @@
+version: "7.0.0"
+engineering_rules: engineering_rules.yaml
+genre_profiles: genre_profiles.yaml
+platform_profiles: platform_profiles.yaml
+plugin_knowledge: plugin_knowledge.yaml
+root_causes: root_causes.yaml
+best_practices: best_practices.yaml

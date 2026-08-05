@@ -1,0 +1,23 @@
+best_practices:
+  processing_order:
+    - eq
+    - compressor
+    - imager
+    - transient_shaper
+    - saturation
+    - limiter
+
+  max_chain_steps: 6
+
+  explanation_templates:
+    score_explanation: "The mix scored {score:.0f} based on {issue_count} detected issues."
+    loudness: "The mix is {lufs_difference:.1f} LUFS from the {platform} target of {target_lufs:.1f} LUFS."
+    dynamics: "Dynamic range is {dynamic_range:.1f} dB; the recommended minimum for {platform} is {recommended_dr:.1f} dB."
+    harshness: "High-frequency energy is elevated; consider a gentle EQ cut in the 2–5 kHz range."
+    stereo: "Stereo width is {stereo_width:.2f}; review mono compatibility and phase alignment."
+
+  safety_checks:
+    - clip
+    - phase
+    - mono
+    - true_peak

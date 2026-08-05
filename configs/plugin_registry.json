@@ -1,0 +1,61 @@
+{
+    "version": "1.0",
+    "plugins": [
+        {
+            "brand": "FabFilter",
+            "name": "Pro-Q 4",
+            "category": "eq",
+            "formats": ["vst3", "au", "aax"],
+            "identifier": "com.fabfilter.Pro-Q.4"
+        },
+        {
+            "brand": "FabFilter",
+            "name": "Pro-C 2",
+            "category": "compressor",
+            "formats": ["vst3", "au", "aax"],
+            "identifier": "com.fabfilter.Pro-C.2"
+        },
+        {
+            "brand": "FabFilter",
+            "name": "Pro-L 2",
+            "category": "limiter",
+            "formats": ["vst3", "au", "aax"],
+            "identifier": "com.fabfilter.Pro-L.2"
+        },
+        {
+            "brand": "iZotope",
+            "name": "Ozone Imager",
+            "category": "imager",
+            "formats": ["vst3", "au"],
+            "identifier": "com.izotope.Ozone.Imager"
+        },
+        {
+            "brand": "SPL",
+            "name": "Transient Designer",
+            "category": "transient_shaper",
+            "formats": ["vst3", "au"],
+            "identifier": "com.spl.TransientDesigner"
+        },
+        {
+            "brand": "SSL",
+            "name": "G-Channel",
+            "category": "compressor",
+            "formats": ["vst3", "au", "aax"],
+            "identifier": "com.ssl.GChannel"
+        },
+        {
+            "brand": "Waves",
+            "name": "CLA-2A",
+            "category": "compressor",
+            "formats": ["vst3", "aax"],
+            "identifier": "com.waves.CLA2A"
+        },
+        {
+            "brand": "Native Instruments",
+            "name": "Supercharger GT",
+            "category": "saturation",
+            "formats": ["vst3", "au"],
+            "identifier": "com.native-instruments.SuperchargerGT"
+        }
+    ]
+}

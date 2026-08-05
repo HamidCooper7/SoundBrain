@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
 
 from brain.orchestration.models import Plan
@@ -13,7 +14,16 @@ class State:
     # User Input
     # ------------------------------------------------------------------
 
-    question: str
+    question: str = ""
+
+    # ------------------------------------------------------------------
+    # V1 SoundBrain Request / Response
+    # ------------------------------------------------------------------
+
+    audio_path: str | Path | None = None
+    reference_path: str | Path | None = None
+    analysis_request: Any = None
+    analysis_response: Any = None
 
     # ------------------------------------------------------------------
     # Planning

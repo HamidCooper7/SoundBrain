@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 import torch
+import torchaudio
 
 from transformers import (
     ClapAudioModelWithProjection,
@@ -11,25 +12,38 @@ from transformers import (
 
 from brain.audio.embeddings.base import AudioEmbeddingModel
 from brain.audio.embeddings.models import EmbeddingCapability
+from brain.audio.embeddings.tasks import EmbeddingTask
 from brain.audio.io.models import AudioData
+from brain.infrastructure.config import settings
 from brain.runtime import ModelRuntime
 
 
 class CLAPEmbedding(AudioEmbeddingModel):
+    """
+    Canonical CLAP audio embedding provider for SoundBrain.
 
-    MODEL_NAME = "laion/clap-htsat-unfused"
+    New code should use this class. The legacy ``CLAPAudioEmbeddingModel`` in
+    ``brain.audio.intelligence.embeddings`` is kept for backward compatibility
+    with existing callers but should not be used in new features.
+    """
 
-    def __init__(self) -> None:
+    # Model name is owned by configuration.
+    MODEL_NAME = settings.models.clap.name
 
-        self._runtime = ModelRuntime()
+    def __init__(self, runtime: ModelRuntime | None = None) -> None:
+        self._runtime = runtime or ModelRuntime.shared()
 
-        self._audio_assets = self._runtime.load(
+    @property
+    def _audio_assets(self):
+        return self._runtime.load(
             model_name=self.MODEL_NAME,
             model_cls=ClapAudioModelWithProjection,
             processor_cls=ClapProcessor,
         )
 
-        self._text_assets = self._runtime.load(
+    @property
+    def _text_assets(self):
+        return self._runtime.load(
             model_name=self.MODEL_NAME,
             model_cls=ClapModel,
             processor_cls=ClapProcessor,
@@ -50,27 +64,52 @@ class CLAPEmbedding(AudioEmbeddingModel):
 
         return EmbeddingCapability(
             backend="transformers",
-            device=str(self._audio_assets.device),
+            device=str(self._runtime.device),
         )
 
     @torch.inference_mode()
     def encode_audio(
         self,
         audio: AudioData,
+        task: EmbeddingTask | None = None,
     ) -> np.ndarray:
 
         processor = self._audio_assets.processor
 
         model = self._audio_assets.model
 
+        target_sample_rate = 48000
+        samples = audio.samples
+        sample_rate = audio.metadata.sample_rate
+
+        if sample_rate != target_sample_rate:
+            waveform = (
+                samples.squeeze()
+                if hasattr(samples, "squeeze")
+                else np.asarray(samples).squeeze()
+            )
+            waveform = np.asarray(waveform, dtype=np.float32)
+            if waveform.ndim > 1:
+                waveform = np.mean(waveform, axis=1)
+            tensor = torch.tensor(waveform, dtype=torch.float32).unsqueeze(0)
+            tensor = torchaudio.transforms.Resample(
+                orig_freq=sample_rate,
+                new_freq=target_sample_rate,
+            )(tensor)
+            samples = tensor.squeeze(0).numpy()
+            sample_rate = target_sample_rate
+
         inputs = processor(
-            audio=audio.samples,
-            sampling_rate=audio.metadata.sample_rate,
+            audio=samples,
+            sampling_rate=sample_rate,
             return_tensors="pt",
         )
 
         inputs = {
-            k: v.to(self._audio_assets.device)
+            k: v.to(
+                self._audio_assets.device,
+                dtype=self._audio_assets.model.dtype,
+            )
             for k, v in inputs.items()
         }
 
@@ -103,7 +142,10 @@ class CLAPEmbedding(AudioEmbeddingModel):
         )
 
         inputs = {
-            k: v.to(self._text_assets.device)
+            k: v.to(
+                self._text_assets.device,
+                dtype=self._text_assets.model.dtype,
+            )
             for k, v in inputs.items()
         }
 
@@ -119,6 +161,10 @@ class CLAPEmbedding(AudioEmbeddingModel):
     def encode(
         self,
         audio: AudioData,
+        task: EmbeddingTask | None = None,
     ) -> np.ndarray:
 
-        return self.encode_audio(audio)
+        return self.encode_audio(
+            audio,
+            task=task,
+        )

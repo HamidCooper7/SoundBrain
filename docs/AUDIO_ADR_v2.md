@@ -1,4 +1,3 @@
-
 # Audio Architecture Decision Record (Audio ADR)
 
 Version: 2.0
@@ -215,11 +214,21 @@ Reference analysis is a first-class architectural component.
 
 The system compares intent rather than numbers alone.
 
-Status: In Progress
+Status: Completed
 
 ---
 
-## 12. Knowledge Integration
+## 12. Mix Intelligence
+
+Mix decisions are derived from structured analysis, root-cause reasoning,
+priority ordering and a non-destructive processing chain. Every recommendation
+carries confidence, evidence and a human-readable explanation.
+
+Status: Completed
+
+---
+
+## 13. Knowledge Integration
 
 Engineering decisions may combine
 
@@ -233,7 +242,7 @@ Status: Planned
 
 ---
 
-## 13. Future Compatibility
+## 14. Future Compatibility
 
 The architecture must support
 

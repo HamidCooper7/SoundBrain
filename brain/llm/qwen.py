@@ -1,23 +1,24 @@
-from transformers import AutoTokenizer, AutoModelForCausalLM
-import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
-MODEL_PATH = r"E:\SoundBrain\models\lmstudio-community\Qwen2.5-7B-Instruct"
+from brain.infrastructure.config import settings
+from brain.runtime import ModelRuntime
 
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+# Model name is owned by configuration; resolved by ModelRepository.
+MODEL_NAME = settings.models.qwen.name
 
-print(f"LLM Device: {DEVICE}")
 
-tokenizer = AutoTokenizer.from_pretrained(
-    MODEL_PATH,
-    trust_remote_code=True
-)
-
-model = AutoModelForCausalLM.from_pretrained(
-    MODEL_PATH,
-    torch_dtype=torch.float16 if DEVICE == "cuda" else torch.float32,
-    device_map="auto",
-    trust_remote_code=True
-)
+def _assets():
+    runtime = ModelRuntime.shared()
+    return runtime.load(
+        model_name=MODEL_NAME,
+        model_cls=AutoModelForCausalLM,
+        tokenizer_cls=AutoTokenizer,
+        trust_remote_code=settings.models.qwen.trust_remote_code,
+        model_options={
+            "device_map": "auto",
+            "torch_dtype": runtime.dtype,
+        },
+    )
 
 
 def generate(
@@ -25,28 +26,20 @@ def generate(
     max_tokens: int = 1024,
     temperature: float = 0.2,
 ):
+    assets = _assets()
+    model = assets.model
+    tokenizer = assets.tokenizer
     messages = [
         {
             "role": "system",
-            "content":
-            "You are SoundBrain, an expert audio engineer and music production assistant."
+            "content": "You are SoundBrain, an expert audio engineer and music production assistant.",
         },
-        {
-            "role": "user",
-            "content": prompt
-        }
+        {"role": "user", "content": prompt},
     ]
 
-    text = tokenizer.apply_chat_template(
-        messages,
-        tokenize=False,
-        add_generation_prompt=True
-    )
+    text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
 
-    inputs = tokenizer(
-        text,
-        return_tensors="pt"
-    ).to(model.device)
+    inputs = tokenizer(text, return_tensors="pt").to(model.device)
 
     outputs = model.generate(
         **inputs,
@@ -57,7 +50,7 @@ def generate(
     )
 
     answer = tokenizer.decode(
-        outputs[0][inputs.input_ids.shape[-1]:],
+        outputs[0][inputs.input_ids.shape[-1] :],
         skip_special_tokens=True,
     )
 

@@ -1,11 +1,13 @@
-from .audio_review_service import (
-    AudioReviewRequest,
-    AudioReviewResult,
-    AudioReviewService,
+from __future__ import annotations
+
+from .soundbrain_service import (
+    AnalysisRequest,
+    AnalysisResponse,
+    SoundBrainService,
 )
 
 __all__ = [
-    "AudioReviewRequest",
-    "AudioReviewResult",
-    "AudioReviewService",
+    "AnalysisRequest",
+    "AnalysisResponse",
+    "SoundBrainService",
 ]

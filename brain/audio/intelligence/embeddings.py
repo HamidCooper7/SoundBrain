@@ -1,7 +1,19 @@
 from __future__ import annotations
 
+"""
+Legacy audio embedding models kept for backward compatibility.
+
+This module predates the ``brain.audio.embeddings`` provider registry.
+For new code, use the canonical provider:
+
+    from brain.audio.embeddings.clap import CLAPEmbedding
+
+CLAPAudioEmbeddingModel is preserved only because existing callers
+(AudioIntelligenceAnalyzer, tests/test_intelligence.py) still import it.
+Do not use it in new features.
+"""
+
 from abc import ABC, abstractmethod
-from pathlib import Path
 
 import numpy as np
 import torch
@@ -11,6 +23,9 @@ from transformers import (
     ClapModel,
     ClapProcessor,
 )
+
+from brain.infrastructure.config import settings
+from brain.runtime import ModelRuntime
 
 
 class AudioEmbeddingModel(ABC):
@@ -26,10 +41,15 @@ class AudioEmbeddingModel(ABC):
 class CLAPAudioEmbeddingModel(
     AudioEmbeddingModel
 ):
+    """
+    Legacy CLAP audio embedding provider.
 
-    MODEL_PATH = Path(
-        r"E:\SoundBrain\models\clap-htsat-unfused"
-    )
+    Use ``brain.audio.embeddings.clap.CLAPEmbedding`` for new code.
+    This class is preserved only for existing callers.
+    """
+
+    # Model name is owned by configuration; resolved by ModelRepository.
+    MODEL_NAME = settings.models.clap.name
 
     TARGET_SAMPLE_RATE = 48000
 
@@ -37,37 +57,35 @@ class CLAPAudioEmbeddingModel(
     def __init__(
         self,
         device: str | None = None,
+        runtime: ModelRuntime | None = None,
     ) -> None:
 
 
-        self.device = (
-            device
-            or (
-                "cuda"
-                if torch.cuda.is_available()
-                else "cpu"
-            )
+        self._runtime = runtime or (
+            ModelRuntime(device=torch.device(device))
+            if device is not None
+            else ModelRuntime.shared()
         )
 
-
-        self.processor = ClapProcessor.from_pretrained(
-            str(self.MODEL_PATH),
-            local_files_only=True,
+    @property
+    def _assets(self):
+        return self._runtime.load(
+            model_name=self.MODEL_NAME,
+            model_cls=ClapModel,
+            processor_cls=ClapProcessor,
         )
 
+    @property
+    def device(self) -> str:
+        return str(self._runtime.device)
 
-        self.model = ClapModel.from_pretrained(
-            str(self.MODEL_PATH),
-            local_files_only=True,
-        )
+    @property
+    def processor(self):
+        return self._assets.processor
 
-
-        self.model.to(
-            self.device
-        )
-
-
-        self.model.eval()
+    @property
+    def model(self):
+        return self._assets.model
 
 
 
@@ -148,7 +166,8 @@ class CLAPAudioEmbeddingModel(
 
         inputs = {
             key: value.to(
-                self.device
+                self.device,
+                dtype=self._assets.dtype,
             )
             for key, value in inputs.items()
         }

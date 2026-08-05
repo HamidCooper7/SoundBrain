@@ -24,12 +24,21 @@ System.
 -   JSON Export
 -   Comparison Engine
 -   Reference Comparison
+-   Reference Intelligence
+-   Mix Intelligence
+-   Plugin Intelligence
+-   Knowledge Infrastructure
+-   Memory & Personalization
+-   Evaluation & Benchmark
+-   Workflow Integration Contracts
+-   AI Provider Layer
 -   Runtime Layer
 -   Service Layer
+-   CLI
 
-Estimated Completion of Core Engine:
+Estimated Completion of V1 Core:
 
-**\~95%**
+**100% — V1.0.0-rc1 Release Candidate**
 
 ------------------------------------------------------------------------
 
@@ -49,21 +58,27 @@ Main Features
 -   Semantic Audio Understanding
 -   Reference Comparison
 -   AI Reasoning
+-   Mix Intelligence
+-   Plugin Intelligence
+-   Knowledge Infrastructure
+-   Memory & Personalization
+-   Evaluation & Benchmark
+-   Workflow Integration Contracts
+-   AI Provider Layer
 -   Professional Reporting
 -   Export
 -   Validation
+-   CLI
 
 Missing
 
--   Reference AI
--   Mix Intelligence
 -   UI
 -   API
 -   Desktop Application
 
 Launch Target
 
-First public MVP.
+First public MVP (V1.0.0-rc1).
 
 ------------------------------------------------------------------------
 
@@ -179,7 +194,15 @@ Knowledge Graph
 
 Reference Intelligence
 
-In Progress
+↓
+
+Mix Intelligence
+
+↓
+
+Plugin Intelligence
+
+Completed
 
 ------------------------------------------------------------------------
 
@@ -199,7 +222,10 @@ DAW Integration
 
 Plugin Control
 
-Planned
+In Progress
+
+Contracts defined in V1; real control surfaces, VST3/AU preset export, and
+automation are V2 work.
 
 ------------------------------------------------------------------------
 
@@ -245,52 +271,61 @@ Reasoning Engine ✅
 
 Comparison Engine ✅
 
+## Sprint 2.5
+
+Runtime Validation ✅
+
+## Sprint 2.6
+
+Core Integration ✅
+
 ## Sprint 6
 
-Reference AI ⏳
-
-Tasks
-
--   Reference Prompt Builder
--   Generic Reasoning Engine
--   Reference Reasoning
--   Intelligent Comparison
+Reference AI ✅
 
 ## Sprint 7
 
-Mix Intelligence
+Mix Intelligence ✅
 
 ## Sprint 8
 
-Recommendation Engine
+Plugin Intelligence ✅
 
 ## Sprint 9
 
-Psychoacoustic Intelligence
+Knowledge Infrastructure ✅
 
 ## Sprint 10
 
-Knowledge Graph
+Memory & Personalization ✅
 
 ## Sprint 11
 
-Memory
+Evaluation & Benchmark ✅
 
 ## Sprint 12
 
-Agent OS
+AI Provider Layer ✅
 
 ## Sprint 13
 
-Desktop UI
+Workflow Integration Contracts ✅
 
 ## Sprint 14
 
-API
+Release Hardening & V1 RC ✅
 
-## Sprint 15
+## V1.1
 
-Commercial Release
+Release Cleanup & Hardening ⏳ Planning
+
+## V1.2
+
+Desktop UI ⏳ Planning
+
+## V1.3
+
+API ⏳ Planning
 
 ------------------------------------------------------------------------
 

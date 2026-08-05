@@ -1,6 +1,11 @@
 from __future__ import annotations
 
+import logging
+
 from brain.orchestration.state import State
+
+
+logger = logging.getLogger(__name__)
 
 
 class PipelineEngine:
@@ -22,10 +27,7 @@ class PipelineEngine:
         state: State,
     ) -> State:
 
-        print()
-        print("Pipeline:")
-        print(state.pipeline)
-        print()
+        logger.info("Pipeline: %s", state.pipeline)
 
         for stage_name in state.pipeline:
 
@@ -33,11 +35,11 @@ class PipelineEngine:
 
             if stage is None:
 
-                print(f"Skipping -> {stage_name}")
+                logger.debug("Skipping -> %s", stage_name)
 
                 continue
 
-            print(f"Running -> {stage_name}")
+            logger.debug("Running -> %s", stage_name)
 
             state = stage.run(state)
 

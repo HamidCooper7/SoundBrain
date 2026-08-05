@@ -1,15 +1,22 @@
-from sentence_transformers import CrossEncoder
+from brain.infrastructure.config import settings
+from brain.runtime import ModelRuntime
 
-MODEL_PATH = r"E:\SoundBrain\models\bge-reranker-v2-m3"
+# Model name is owned by configuration; resolved by ModelRepository.
+MODEL_NAME = settings.models.bge_reranker.name
 
-print("Loading Reranker...")
 
-model = CrossEncoder(
-    MODEL_PATH,
-    trust_remote_code=True,
-)
+def get_reranker(runtime: ModelRuntime | None = None):
+    # Lazy import avoids a Windows segfault when sentence_transformers is
+    # loaded at module import time alongside chromadb's EmbeddingFunction.
+    from sentence_transformers import CrossEncoder
 
-print("Reranker Ready")
+    assets = (runtime or ModelRuntime.shared()).load(
+        model_name=MODEL_NAME,
+        model_cls=CrossEncoder,
+        backend="sentence-transformers",
+        trust_remote_code=settings.models.bge_reranker.trust_remote_code,
+    )
+    return assets.model
 
 
 def rerank(
@@ -21,12 +28,9 @@ def rerank(
     if not documents:
         return []
 
-    pairs = [
-        (query, doc["text"])
-        for doc in documents
-    ]
+    pairs = [(query, doc["text"]) for doc in documents]
 
-    scores = model.predict(
+    scores = get_reranker().predict(
         pairs,
         show_progress_bar=False,
     )

@@ -3,6 +3,8 @@ from __future__ import annotations
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
+from brain.infrastructure.config import settings
+from brain.runtime import ModelRuntime
 from brain.text.embeddings.base import TextEmbeddingModel
 
 
@@ -10,12 +12,17 @@ class SentenceTransformerEmbedding(TextEmbeddingModel):
 
     MODEL_NAME = "Qwen/Qwen3-Embedding-0.6B"
 
-    def __init__(self) -> None:
+    def __init__(self, runtime: ModelRuntime | None = None) -> None:
+        self._runtime = runtime or ModelRuntime.shared()
 
-        self._model = SentenceTransformer(
-            self.MODEL_NAME,
-            trust_remote_code=True,
-        )
+    @property
+    def _model(self) -> SentenceTransformer:
+        return self._runtime.load(
+            model_name=self.MODEL_NAME,
+            model_cls=SentenceTransformer,
+            backend="sentence-transformers",
+            trust_remote_code=settings.models.text_embedding.trust_remote_code,
+        ).model
 
     @property
     def name(self) -> str:
