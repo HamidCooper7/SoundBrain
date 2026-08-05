@@ -119,18 +119,37 @@ Removed
 | Service Facade | Production |
 | Engine Registry | Production |
 | Orchestration | Implemented |
-| AI Provider Layer | Implemented |
+| AI Provider Layer | Production |
 | Audio Intelligence | Production |
 | Reference AI | Production |
 | Mix Intelligence | Production |
 | Plugin Intelligence | Production |
-| Knowledge Infrastructure | Implemented |
-| Memory & Personalization | Implemented |
-| Evaluation & Benchmark | Implemented |
-| DAW Integration | Implemented |
+| Knowledge Infrastructure | Production |
+| Memory & Personalization | Production |
+| Evaluation & Benchmark | Production |
+| DAW Integration | Production |
 | CLI | Production |
 | API | Planned |
 | Desktop UI | Planned |
+
+---
+
+# V1.0.0-rc1 Release Candidate
+
+Release Date: 2026-08-05
+
+All V1 capabilities have reached Production or Verified status. The codebase has
+passed release hardening validation including formatting, lint, compileall,
+regression tests, CLI validation, workflow export, evaluation, and provider layer
+verification.
+
+Known limitations for V1.1:
+
+-   HTTP LLM providers (Gemini/OpenAI) are stubs.
+-   Local inference backend is a stub.
+-   Real Qwen/Whisper model availability is environment-dependent.
+-   Reference segmentation is a thin V1 placeholder over global analysis.
+-   Repository-wide formatting/lint cleanup remains for legacy files.
 
 ---
 

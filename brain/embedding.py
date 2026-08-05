@@ -17,7 +17,7 @@ def get_embedding_model():
         model_name=str(settings.embedding.model_path),
         model_cls=SentenceTransformer,
         backend="sentence-transformers",
-        trust_remote_code=True,
+        trust_remote_code=settings.models.text_embedding.trust_remote_code,
     )
     return assets.model
 

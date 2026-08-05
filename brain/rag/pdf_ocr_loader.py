@@ -1,6 +1,10 @@
+import logging
+
 import fitz
 import numpy as np
 from paddleocr import PaddleOCR
+
+logger = logging.getLogger(__name__)
 
 
 ocr = PaddleOCR(
@@ -49,9 +53,8 @@ def load_pdf(pdf_path):
 
                     text = "\n".join(res["rec_texts"])
 
-        except Exception as e:
-
-            print(f"OCR Error Page {page_number+1}: {e}")
+        except (ValueError, TypeError, KeyError, AttributeError) as e:
+            logger.warning("OCR Error Page %s: %s", page_number + 1, e)
 
         pages.append(
             {

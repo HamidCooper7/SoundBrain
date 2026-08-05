@@ -1,7 +1,6 @@
 from brain.infrastructure.config import settings
 from brain.runtime import ModelRuntime
 
-
 # Model name is owned by configuration; resolved by ModelRepository.
 MODEL_NAME = settings.models.bge_reranker.name
 
@@ -15,7 +14,7 @@ def get_reranker(runtime: ModelRuntime | None = None):
         model_name=MODEL_NAME,
         model_cls=CrossEncoder,
         backend="sentence-transformers",
-        trust_remote_code=True,
+        trust_remote_code=settings.models.bge_reranker.trust_remote_code,
     )
     return assets.model
 
@@ -29,10 +28,7 @@ def rerank(
     if not documents:
         return []
 
-    pairs = [
-        (query, doc["text"])
-        for doc in documents
-    ]
+    pairs = [(query, doc["text"]) for doc in documents]
 
     scores = get_reranker().predict(
         pairs,

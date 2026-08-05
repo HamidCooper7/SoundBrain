@@ -34,7 +34,29 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
-dependencies = []
+dependencies = [
+    "torch",
+    "torchaudio",
+    "transformers",
+    "sentence-transformers",
+    "accelerate",
+    "numpy",
+    "scipy",
+    "librosa",
+    "soundfile",
+    "pyloudnorm",
+    "chromadb",
+    "langchain-core",
+    "langchain-text-splitters",
+    "openai",
+    "requests",
+    "pymupdf",
+    "marker-pdf",
+    "paddleocr",
+    "pydantic",
+    "PyYAML",
+    "tqdm",
+]
 
 [tool.setuptools]
 include-package-data = true

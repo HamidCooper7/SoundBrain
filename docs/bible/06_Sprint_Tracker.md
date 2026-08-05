@@ -23,7 +23,8 @@
   Sprint 9     ✅ Completed 100%
   Sprint 10    ✅ Completed 100%
   Sprint 11    ✅ Completed 100%
-  Sprint 12    ⏳ Waiting    0%
+  Sprint 12    ✅ Completed 100%
+  V1.1         ⏳ Planning   0%
 
 ------------------------------------------------------------------------
 
@@ -244,9 +245,47 @@ Blocked By: - Sprint 10 completion
 
 ------------------------------------------------------------------------
 
-# Sprint 12 --- Future Sprint (Placeholder)
+# Sprint 12 --- Release Hardening & V1 Release Candidate
 
--   [ ] TBD
+-   [x] Review Sprint 4 implementation for regressions, duplicated code, dead code,
+        unused imports, debug code, TODO/FIXME, accidental API changes, and
+        architectural violations
+-   [x] Repair validation environment and confirm dependency installation
+-   [x] Run compileall, pytest, runtime tests, reference tests, CLI tests,
+        integration tests, engine registry tests, pipeline tests, service tests,
+        and `git diff --check`
+-   [x] Run `black --check` and `ruff check` on Sprint 12 changed files
+-   [x] Perform architecture audit: Runtime owns model loading, Repository owns
+        model resolution, Application only orchestrates, Reference module owns
+        comparison/export, no circular dependencies, no duplicated orchestration
+        or export paths
+-   [x] Fix confirmed release blockers:
+        - `trust_remote_code` configurable per model entry instead of hardcoded
+        - Atomic JSON report export via temp file + replace
+        - Silent exception handling replaced with explicit `status`/`warnings`
+        - Plugin parameter generation consumes `ProcessingGoal` meaningfully
+        - Provider default resolved from configuration
+        - Configuration validation fails fast on YAML parse errors
+        - `pyproject.toml` dependencies populated from `requirements.txt`
+-   [x] Synchronize Sprint 12 documentation
+-   [x] Generate `reports/v1_release_validation.json`
+
+Blocked By: - Sprint 11 completion
+
+------------------------------------------------------------------------
+
+# V1.1 --- Release Cleanup & Hardening (Planning)
+
+-   [ ] Repository-wide `black`/`ruff` formatting pass on all legacy files
+-   [ ] Canonical CLAP provider consolidation (legacy `brain.audio.intelligence.embeddings` migration)
+-   [ ] Real HTTP LLM provider implementations (Gemini/OpenAI) — P2
+-   [ ] Real local inference backend abstraction — P2
+-   [ ] Real Qwen model availability / validation test — P2
+-   [ ] Real Whisper provider / test — P2
+-   [ ] CUDA validation — P2
+-   [ ] Full per-window reference segmentation (replace thin V1 placeholder)
+-   [ ] LLM-backed reference reasoning
+-   [ ] LLM-enriched mix intelligence reasoning
 
 ------------------------------------------------------------------------
 

@@ -8,7 +8,6 @@ from brain.infrastructure.config.models import (
     AudioConfig,
     ChromaConfig,
     EmbeddingConfig,
-    LLMConfig,
     LoggingConfig,
     ModelEntry,
     ModelsConfig,
@@ -18,7 +17,10 @@ from brain.infrastructure.config.settings import DEFAULT_SETTINGS
 
 try:
     import yaml
-except Exception:  # pragma: no cover - PyYAML is optional in some test envs
+except (
+    ImportError,
+    ModuleNotFoundError,
+):  # pragma: no cover - PyYAML is optional in some test envs
     yaml = None
 
 
@@ -32,7 +34,11 @@ def _config_dir() -> Path:
 
 
 def _load_yaml(path: Path) -> dict[str, Any]:
-    """Load a YAML file, returning an empty dict if it is missing or empty."""
+    """Load a YAML file, returning an empty dict if it is missing or empty.
+
+    Raises yaml.YAMLError if the file exists but contains invalid YAML so that
+    configuration problems fail fast instead of silently falling back to defaults.
+    """
     if yaml is None or not path.exists():
         return {}
     text = path.read_text(encoding="utf-8")
@@ -48,11 +54,7 @@ def _deep_update(
 ) -> dict[str, Any]:
     """Recursively merge overlay into base."""
     for key, value in overlay.items():
-        if (
-            key in base
-            and isinstance(base[key], dict)
-            and isinstance(value, dict)
-        ):
+        if key in base and isinstance(base[key], dict) and isinstance(value, dict):
             _deep_update(base[key], value)
         else:
             base[key] = value
@@ -76,6 +78,10 @@ def _model_entry(data: dict[str, Any] | None, default: ModelEntry) -> ModelEntry
         name=data.get("name", default.name),
         backend=data.get("backend", default.backend),
         revision=data.get("revision", default.revision),
+        trust_remote_code=data.get(
+            "trust_remote_code",
+            default.trust_remote_code,
+        ),
     )
 
 

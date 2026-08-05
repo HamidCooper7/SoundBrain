@@ -55,3 +55,7 @@ class SoundBrainReport:
     confidence_scores: dict[str, float] = field(default_factory=dict)
 
     plugin_intelligence: PluginIntelligenceResult | None = None
+
+    status: str = "ok"
+
+    warnings: list[str] = field(default_factory=list)

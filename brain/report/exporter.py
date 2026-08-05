@@ -19,6 +19,8 @@ class ReportExporter:
                 "is_full_mix": report.is_full_mix,
                 "confidence": round(report.confidence, 2),
                 "confidence_scores": report.confidence_scores,
+                "status": report.status,
+                "warnings": report.warnings,
             },
             "intelligence": {
                 "semantic_labels": [
@@ -155,8 +157,12 @@ class ReportExporter:
         path: str,
     ) -> None:
         data = self.to_dict(report)
-
-        Path(path).write_text(
+        target = Path(path)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        # Atomic write: write to a temporary file in the same directory and rename
+        # so consumers never see a partially-written report.
+        temp_path = target.with_suffix(target.suffix + ".tmp")
+        temp_path.write_text(
             json.dumps(
                 data,
                 indent=4,
@@ -164,3 +170,4 @@ class ReportExporter:
             ),
             encoding="utf-8",
         )
+        temp_path.replace(target)

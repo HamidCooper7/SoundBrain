@@ -400,13 +400,66 @@ Remaining Notes
 
 ---
 
-## Blockers for Sprint 12
+## Sprint 12 — Release Hardening & V1 Release Candidate
 
+Status: ✅ Completed
+
+Completed
+
+-   [x] Audited Sprint 4 implementation for regressions, duplicated code, dead code,
+        unused imports, debug code, and architectural violations.
+-   [x] Repaired validation environment and confirmed dependencies.
+-   [x] Ran compileall, pytest, runtime/reference/CLI/integration/service/pipeline tests.
+-   [x] Ran `black --check` and `ruff check` on Sprint 12 changed files.
+-   [x] Performed architecture audit (Runtime, Repository, Application, Reference boundaries).
+-   [x] Fixed confirmed release blockers:
+    -   `trust_remote_code` configurable per model entry.
+    -   Atomic report export via temp file + replace.
+    -   Silent exceptions replaced with explicit `status`/`warnings`.
+    -   `ParameterGenerator` consumes `ProcessingGoal`.
+    -   Provider default from configuration.
+    -   Config validation fails fast on YAML parse errors.
+    -   `pyproject.toml` dependencies populated.
+-   [x] Generated `reports/v1_release_validation.json` (all checks passed).
+
+Files
+
+-   brain/infrastructure/config/models.py
+-   brain/infrastructure/config/loader.py
+-   configs/models.yaml
+-   brain/llm/qwen.py
+-   brain/embedding.py
+-   brain/rag/reranker.py
+-   brain/text/embeddings/providers/sentence_transformer.py
+-   brain/audio/plugin/parameter_generator.py
+-   brain/report/exporter.py
+-   brain/report/models.py
+-   brain/application/soundbrain_service.py
+-   brain/reasoning/parser.py
+-   brain/providers/factory.py
+-   brain/rag/pdf_ocr_loader.py
+-   pyproject.toml
+-   scripts/generate_v1_release_validation.py (new)
+-   reports/v1_release_validation.json (new)
+
+Remaining Notes
+
+-   Targeted formatting/lint passed on changed files. Full repository-wide pass on
+    legacy files is deferred to V1.1.
+
+---
+
+## Blockers for V1.1
+
+-   [ ] Repository-wide `black`/`ruff` pass on legacy files — P2
 -   [ ] Real HTTP LLM providers (Gemini/OpenAI) — P2
 -   [ ] Local inference backend abstraction — P2
 -   [ ] Real Qwen model availability / validation test — P2 (carry-over)
 -   [ ] Real Whisper provider / test — P2 (carry-over)
 -   [ ] CUDA validation — P2 (carry-over)
+-   [ ] Full per-window reference segmentation — P2
+-   [ ] LLM-backed reference reasoning — P2
+-   [ ] LLM-enriched mix intelligence reasoning — P2
 
 ---
 

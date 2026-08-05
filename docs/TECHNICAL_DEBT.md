@@ -831,13 +831,80 @@ Remaining Notes
 
 ---
 
-## Blockers for Sprint 12
+## P0 — Sprint 12 — Release Hardening & V1 Release Candidate
 
+Status: ✅ Completed
+
+Description
+
+Sprint 12 did not add new capabilities. It hardened the existing V1 codebase for
+production release by fixing confirmed release blockers, completing validation,
+and synchronizing release documentation.
+
+Completed
+
+- Audited entire Sprint 4 implementation for regressions, duplicated code, dead
+  code, unused imports, debug code, TODO/FIXME, accidental API changes, and
+  architectural violations.
+- Repaired validation environment and confirmed all required dependencies install.
+- Ran compileall, pytest runtime/reference/CLI/integration/service/pipeline tests,
+  and `git diff --check`.
+- Ran `black --check` and `ruff check` on all Sprint 12 changed files.
+- Performed architecture audit confirming Runtime owns model loading, Repository
+  owns model resolution, Application only orchestrates, Reference module owns
+  comparison/export, and no circular dependencies or duplicated orchestration
+  exist.
+- Made `trust_remote_code` configurable per `ModelEntry` instead of hardcoded
+  `True` in model loading modules.
+- Made `ReportExporter.save_json` atomic via temp-file + replace.
+- Replaced silent exception handling with explicit `AnalysisResponse.status` and
+  `SoundBrainReport.warnings` propagation in `SoundBrainService.analyze`.
+- Updated `ParameterGenerator` to consume `ProcessingGoal` fields (description,
+  action, target, root_cause) for goal-aware parameter generation.
+- Resolved provider default from configuration (`LLMConfig.provider`) rather than
+  unnecessary hardcoding.
+- Made configuration loading fail fast on YAML parse errors.
+- Populated `pyproject.toml` dependencies from `requirements.txt`.
+- Generated `reports/v1_release_validation.json` with all checks passing.
+
+Files
+
+- brain/infrastructure/config/models.py (modified)
+- brain/infrastructure/config/loader.py (modified)
+- configs/models.yaml (modified)
+- brain/llm/qwen.py (modified)
+- brain/embedding.py (modified)
+- brain/rag/reranker.py (modified)
+- brain/text/embeddings/providers/sentence_transformer.py (modified)
+- brain/audio/plugin/parameter_generator.py (modified)
+- brain/report/exporter.py (modified)
+- brain/report/models.py (modified)
+- brain/application/soundbrain_service.py (modified)
+- brain/reasoning/parser.py (modified)
+- brain/providers/factory.py (modified)
+- brain/rag/pdf_ocr_loader.py (modified)
+- pyproject.toml (modified)
+- scripts/generate_v1_release_validation.py (new)
+- reports/v1_release_validation.json (new)
+
+Remaining Notes
+
+- Targeted validation passed on Sprint 12 changed files and tests. A full
+  repository-wide `black`/`ruff` pass on legacy files is deferred to V1.1 cleanup.
+
+---
+
+## Blockers for V1.1
+
+-   [ ] Repository-wide `black`/`ruff` formatting pass on legacy files — P2
 -   [ ] Real HTTP LLM providers (Gemini/OpenAI) — P2
 -   [ ] Local inference backend abstraction (llama.cpp/ollama) — P2
 -   [ ] Real Qwen model availability / validation test — P2 (carry-over)
 -   [ ] Real Whisper provider / test — P2 (carry-over)
 -   [ ] CUDA validation — P2 (carry-over)
+-   [ ] Full per-window reference segmentation — P2
+-   [ ] LLM-backed reference reasoning — P2
+-   [ ] LLM-enriched mix intelligence reasoning — P2
 
 ---
 

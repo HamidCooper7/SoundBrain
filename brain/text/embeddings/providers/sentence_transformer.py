@@ -3,8 +3,9 @@ from __future__ import annotations
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-from brain.text.embeddings.base import TextEmbeddingModel
+from brain.infrastructure.config import settings
 from brain.runtime import ModelRuntime
+from brain.text.embeddings.base import TextEmbeddingModel
 
 
 class SentenceTransformerEmbedding(TextEmbeddingModel):
@@ -20,7 +21,7 @@ class SentenceTransformerEmbedding(TextEmbeddingModel):
             model_name=self.MODEL_NAME,
             model_cls=SentenceTransformer,
             backend="sentence-transformers",
-            trust_remote_code=True,
+            trust_remote_code=settings.models.text_embedding.trust_remote_code,
         ).model
 
     @property

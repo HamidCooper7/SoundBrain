@@ -94,6 +94,8 @@ class ModelEntry:
 
     revision: str | None = None
 
+    trust_remote_code: bool = False
+
 
 @dataclass(slots=True)
 class ModelsConfig:

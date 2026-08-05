@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, field, is_dataclass, replace
 from pathlib import Path
 from typing import Any
 
@@ -67,6 +67,8 @@ class AnalysisResponse:
     comparison: ReferenceComparison | None = None
     mix_intelligence: MixIntelligenceResult | None = None
     plugin_intelligence: PluginIntelligenceResult | None = None
+    status: str = "ok"
+    warnings: list[str] = field(default_factory=list)
 
 
 class SoundBrainService:
@@ -115,7 +117,9 @@ class SoundBrainService:
         )
         review_result = review_service.review(review_request)
 
-        comparison = self._run_reference_comparison(request)
+        warnings: list[str] = []
+
+        comparison = self._run_reference_comparison(request, warnings)
 
         rag_context = ""
         if request.include_rag:
@@ -123,18 +127,23 @@ class SoundBrainService:
                 review_result.context,
                 review_result.engineering,
                 request,
+                warnings,
             )
 
         report = review_result.report
         mix_result: MixIntelligenceResult | None = None
         plugin_result: PluginIntelligenceResult | None = None
         if request.include_mix_intelligence:
-            mix_result = self._run_mix_intelligence(review_result)
+            mix_result = self._run_mix_intelligence(review_result, warnings)
             if mix_result is not None:
                 report = self._enrich_report_with_mix(report, mix_result)
 
         if request.include_plugin_intelligence and mix_result is not None:
-            plugin_result = self._run_plugin_intelligence(mix_result, review_result.context)
+            plugin_result = self._run_plugin_intelligence(
+                mix_result,
+                review_result.context,
+                warnings,
+            )
             if plugin_result is not None:
                 report = self._enrich_report_with_plugin(report, plugin_result)
 
@@ -151,12 +160,18 @@ class SoundBrainService:
                 reference_summary=reference_summary,
                 mix_summary=mix_summary,
                 request=request,
+                warnings=warnings,
             )
             if reasoning_answer:
                 report = self._rebuild_report_with_reasoning(
                     report=report,
                     ai_answer=reasoning_answer,
                 )
+
+        status = "ok" if not warnings else "degraded"
+
+        if is_dataclass(report) and not isinstance(report, type):
+            report = replace(report, status=status, warnings=warnings)
 
         if request.output_path is not None and review_result.report is not report:
             from brain.report import ReportExporter
@@ -172,11 +187,14 @@ class SoundBrainService:
             comparison=comparison,
             mix_intelligence=mix_result,
             plugin_intelligence=plugin_result,
+            status=status,
+            warnings=warnings,
         )
 
     def _run_reference_comparison(
         self,
         request: AnalysisRequest,
+        warnings: list[str],
     ) -> ReferenceComparison | None:
         """
         Run the reference comparison pipeline when a reference path is provided.
@@ -208,11 +226,12 @@ class SoundBrainService:
             )
             return report.comparison
         except Exception as exc:
+            message = f"Reference comparison failed: {exc}"
             logger.warning(
-                "Reference comparison failed: %s",
-                exc,
+                message,
                 exc_info=logger.isEnabledFor(logging.DEBUG),
             )
+            warnings.append(message)
             return None
 
     def _format_reference_summary(
@@ -252,6 +271,7 @@ class SoundBrainService:
         context: AudioContext,
         engineering: EngineerResult,
         request: AnalysisRequest,
+        warnings: list[str],
     ) -> str:
         """
         Retrieve relevant documents from the RAG collection.
@@ -262,11 +282,12 @@ class SoundBrainService:
         try:
             from brain.rag.retriever import retrieve
         except Exception as exc:
+            message = f"RAG retriever unavailable: {exc}"
             logger.warning(
-                "RAG retriever unavailable: %s",
-                exc,
+                message,
                 exc_info=logger.isEnabledFor(logging.DEBUG),
             )
+            warnings.append(message)
             return ""
 
         query_parts = [request.intent, request.delivery_target, context.audio_type]
@@ -280,11 +301,12 @@ class SoundBrainService:
         try:
             documents = retrieve(query, k=5)
         except Exception as exc:
+            message = f"RAG retrieval failed: {exc}"
             logger.warning(
-                "RAG retrieval failed: %s",
-                exc,
+                message,
                 exc_info=logger.isEnabledFor(logging.DEBUG),
             )
+            warnings.append(message)
             return ""
 
         if not documents:
@@ -308,6 +330,7 @@ class SoundBrainService:
         reference_summary: str,
         mix_summary: str = "",
         request: AnalysisRequest,
+        warnings: list[str],
     ) -> str:
         """
         Run LLM reasoning over the deterministic results.
@@ -319,11 +342,12 @@ class SoundBrainService:
             from brain.reasoning.engine import ReasoningEngine
             from brain.reasoning.models import ReasoningContext
         except Exception as exc:
+            message = f"Reasoning engine unavailable: {exc}"
             logger.warning(
-                "Reasoning engine unavailable: %s",
-                exc,
+                message,
                 exc_info=logger.isEnabledFor(logging.DEBUG),
             )
+            warnings.append(message)
             return ""
 
         question_parts = [request.intent, request.delivery_target]
@@ -349,11 +373,12 @@ class SoundBrainService:
                 )
             )
         except Exception as exc:
+            message = f"Reasoning failed: {exc}"
             logger.warning(
-                "Reasoning failed: %s",
-                exc,
+                message,
                 exc_info=logger.isEnabledFor(logging.DEBUG),
             )
+            warnings.append(message)
             return ""
 
         if not result.answer:
@@ -378,6 +403,7 @@ class SoundBrainService:
     def _run_mix_intelligence(
         self,
         review_result: Any,
+        warnings: list[str],
     ) -> MixIntelligenceResult | None:
         """
         Run deterministic mix intelligence over the deterministic results.
@@ -416,11 +442,12 @@ class SoundBrainService:
                 confidence_scores=root_causes.confidence_scores,
             )
         except Exception as exc:
+            message = f"Mix intelligence failed: {exc}"
             logger.warning(
-                "Mix intelligence failed: %s",
-                exc,
+                message,
                 exc_info=logger.isEnabledFor(logging.DEBUG),
             )
+            warnings.append(message)
             return None
 
     def _enrich_report_with_mix(
@@ -472,6 +499,7 @@ class SoundBrainService:
         self,
         mix_result: MixIntelligenceResult,
         context: AudioContext,
+        warnings: list[str],
     ) -> PluginIntelligenceResult | None:
         """
         Run deterministic plugin intelligence over the Mix Intelligence result.
@@ -483,11 +511,12 @@ class SoundBrainService:
             service = self._plugin_intelligence_service or PluginIntelligenceService()
             return service.analyze(mix_result, context)
         except Exception as exc:
+            message = f"Plugin intelligence failed: {exc}"
             logger.warning(
-                "Plugin intelligence failed: %s",
-                exc,
+                message,
                 exc_info=logger.isEnabledFor(logging.DEBUG),
             )
+            warnings.append(message)
             return None
 
     def _enrich_report_with_plugin(
